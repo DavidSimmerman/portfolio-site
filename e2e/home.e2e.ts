@@ -21,7 +21,7 @@ test('home page renders hero, sections, and working links', async ({ page }) => 
 		'href',
 		'https://wiselyoptimize.com'
 	);
-	await expect(page.getByRole('link', { name: /GitHub/ })).toHaveAttribute(
+	await expect(page.locator('#contact').getByRole('link', { name: /GitHub/ })).toHaveAttribute(
 		'href',
 		'https://github.com/DavidSimmerman'
 	);
@@ -32,6 +32,36 @@ test('home page renders hero, sections, and working links', async ({ page }) => 
 	await expect(cbbShot).toBeVisible();
 	const naturalWidth = await cbbShot.evaluate((el: HTMLImageElement) => el.naturalWidth);
 	expect(naturalWidth).toBeGreaterThan(0);
+});
+
+test('other-projects switcher shows one project at a time', async ({ page }) => {
+	await page.goto('/');
+	const tabs = page.getByRole('tab');
+	await expect(tabs).toHaveCount(5);
+
+	// Discovery selected by default
+	await expect(page.getByRole('heading', { name: 'Discovery' })).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Giddey' })).toHaveCount(0);
+
+	// switch to Giddey
+	await tabs.filter({ hasText: 'Giddey' }).click();
+	await expect(page.getByRole('heading', { name: 'Giddey' })).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Discovery' })).toHaveCount(0);
+	await expect(page.getByRole('link', { name: /giddey\.simmerman\.tech/ })).toBeVisible();
+});
+
+test('about section has posey gallery and resume-style work entries', async ({ page }) => {
+	await page.goto('/');
+
+	// both employers, no personal projects in work band
+	const work = page.locator('#work');
+	await expect(work).toContainText('Wisely Optimize');
+	await expect(work).toContainText('XGen AI');
+	await expect(work).not.toContainText('CBB Composite');
+
+	// posey gallery photos
+	const gallery = page.locator('figure');
+	expect(await gallery.count()).toBeGreaterThanOrEqual(6);
 });
 
 test('accent token is applied from layout.css', async ({ page }) => {
