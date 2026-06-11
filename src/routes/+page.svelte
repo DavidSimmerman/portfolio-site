@@ -67,8 +67,11 @@
 	<div class="mt-12 flex flex-col gap-20">
 		<div class="relative">
 			<svg class="ghost ghost-x" viewBox="0 0 100 110" fill="none" aria-hidden="true">
-				<path class="draw draw-1" pathLength="1" d="M10 6 L90 104" />
-				<path class="draw draw-2" pathLength="1" d="M90 6 L10 104" />
+				<path
+					class="draw"
+					pathLength="1"
+					d="M8 6 L31 6 L50 33 L69 6 L92 6 L62 55 L92 104 L69 104 L50 77 L31 104 L8 104 L38 55 Z"
+				/>
 			</svg>
 			<WorkEntry
 				dock="left"
@@ -92,7 +95,11 @@
 		</div>
 		<div class="relative">
 			<svg class="ghost ghost-w" viewBox="0 0 100 110" fill="none" aria-hidden="true">
-				<path class="draw draw-w" pathLength="1" d="M6 6 L28 104 L50 30 L72 104 L94 6" />
+				<path
+					class="draw"
+					pathLength="1"
+					d="M4 6 L21 6 L31 64 L50 20 L69 64 L79 6 L96 6 L71 104 L50 48 L29 104 Z"
+				/>
 			</svg>
 			<WorkEntry
 				dock="right"
@@ -358,15 +365,8 @@
 		stroke-dashoffset: 1;
 		animation: draw-in 1s linear both;
 		animation-timeline: --ghost;
-	}
-	.draw-1 {
-		animation-range: entry 20% entry 90%;
-	}
-	.draw-2 {
-		animation-range: entry 70% cover 55%;
-	}
-	.draw-w {
-		animation-range: entry 20% cover 55%;
+		/* letters sketch in early, before the panel flies in */
+		animation-range: entry 5% cover 40%;
 	}
 	@keyframes draw-in {
 		to {

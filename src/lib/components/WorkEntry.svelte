@@ -74,9 +74,9 @@
 		animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 		animation-fill-mode: both;
 		animation-timeline: --panel;
-		/* start once a third of the panel is in view, settle when its center
-		   nears the viewport center — so the motion plays while you're looking */
-		animation-range: entry 30% cover 50%;
+		/* start once ~40% of the panel is in view, settle just past viewport
+		   center — late enough that the motion plays while you're looking */
+		animation-range: entry 40% cover 58%;
 	}
 	.dock-left {
 		margin-right: max(2rem, 9vw);
@@ -120,7 +120,7 @@
 	.stagger {
 		animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 		animation-timeline: --panel;
-		animation-range: entry calc(38% + var(--si, 0) * 5%) cover calc(52% + var(--si, 0) * 5%);
+		animation-range: entry calc(48% + var(--si, 0) * 5%) cover calc(62% + var(--si, 0) * 5%);
 	}
 	@keyframes rise {
 		from {
