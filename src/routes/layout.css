@@ -1,1 +1,111 @@
 @import 'tailwindcss';
+
+/*
+ * Design tokens. To change the site's accent color, edit --accent below —
+ * everything (highlight words, spec-lines, hovers, selection) follows it.
+ * --cta stays Apple blue for all interactive links regardless of accent.
+ */
+:root {
+	--accent: #30d158;
+	--cta: #2997ff;
+	--bg: #08080a;
+	--bg-elev: #131315;
+	--line: #2c2c2e;
+	--line-soft: #222226;
+	--text: #f5f5f7;
+	--text-2: #c7c7cc;
+	--text-3: #98989d;
+	--text-4: #636368;
+}
+
+html {
+	background: var(--bg);
+	color: var(--text);
+	font-family: 'Switzer', ui-sans-serif, system-ui, sans-serif;
+	scroll-behavior: smooth;
+	color-scheme: dark;
+}
+
+::selection {
+	background: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+/* ---------- shared motion ---------- */
+@keyframes line-in {
+	from {
+		opacity: 0;
+		transform: translateY(40px);
+		clip-path: inset(0 0 100% 0);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+		clip-path: inset(-10% 0 -10% 0);
+	}
+}
+@keyframes view-in {
+	from {
+		opacity: 0;
+		transform: translateY(28px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+@keyframes parallax-zoom {
+	from {
+		transform: scale(1.16);
+	}
+	to {
+		transform: scale(1);
+	}
+}
+
+/* hero entrance lines — stagger with --d */
+.rise {
+	animation: line-in 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+	animation-delay: calc(var(--d, 0) * 150ms);
+}
+
+/* scroll-driven reveal (Chrome/Edge; graceful no-op elsewhere) */
+.reveal {
+	animation: view-in 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+	animation-timeline: view();
+	animation-range: entry 0% entry 55%;
+	animation-delay: var(--vd, 0s);
+}
+
+/* full-bleed photo zoom */
+.parallax {
+	animation: parallax-zoom 1s linear both;
+	animation-timeline: view();
+	animation-range: entry 0% exit 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.rise,
+	.reveal,
+	.parallax {
+		animation: none;
+	}
+	html {
+		scroll-behavior: auto;
+	}
+}
+
+/* ---------- recurring pieces ---------- */
+.cta {
+	color: var(--cta);
+	font-weight: 500;
+	cursor: pointer;
+}
+.cta:hover {
+	text-decoration: underline;
+}
+
+.grain {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+	opacity: 0.05;
+	mix-blend-mode: overlay;
+}
