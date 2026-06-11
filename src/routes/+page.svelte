@@ -60,39 +60,54 @@
 <!-- ============================================================
      BAND 2 — GRAY (full width): work, resume-style
 ============================================================ -->
-<section id="work" class="w-full px-8 py-20 md:px-16" style="background: var(--bg-elev)">
-	<SpecLine label="Work" detail="the professional record" />
-	<div class="mt-10 flex flex-col gap-6">
-		<WorkEntry
-			company="XGen AI → Zoovu"
-			summary="Composable AI for e-commerce — product recommendations and search for enterprise brands including Gucci, Sonos, Valentino, Armani, and Coach. Acquired by Zoovu in May 2026."
-			roles={[
-				{ title: 'Senior Software Engineer · Zoovu', dates: 'May 2026 – present' },
-				{ title: 'Director of Frontend Development', dates: 'Feb 2023 – May 2026' },
-				{ title: 'VP of Integrations', dates: '2022 – Feb 2023' },
-				{ title: 'Integrations Developer', dates: 'Nov 2020 – 2022' }
-			]}
-			bullets={[
-				'Led a four-person team building a composable AI platform — non-technical users configure, build, train, and deploy AI models without sacrificing capability; includes API sandboxes, element code editors, and an analytics suite',
-				'Ran a team of eight integration developers; owned prioritization across enterprise clients',
-				'Built the JavaScript SDK and DOM event-listener library used for every client integration',
-				'Built a universal product sync — any file type, format, or transfer method (HTTPS/FTP/API), with data-mutation tooling to normalize any client catalog',
-				'Built an email image-generation service for personalized recommendations without upfront compute — recs render on image request',
-				'Cut AWS costs 30%'
-			]}
-		/>
-		<WorkEntry
-			company="Wisely Optimize"
-			summary="Basketball intelligence platform used by Division 1 programs — Houston, Ole Miss, and Baylor run their rosters on it. Part-time alongside Zoovu, year-round, deep in the sport."
-			roles={[{ title: 'Basketball Engineer · part-time', dates: 'Mar 2026 – present' }]}
-			bullets={[
-				'Built the roster construction tool — NBA front-office process and predictive analytics applied to college rosters, so coaches and GMs can target the right players',
-				'Built a team strengths & weaknesses tool that analyzes season stats and calls out what to fix',
-				'Built an AI agent for fast, natural-language navigation across the whole platform',
-				'Redesigned the entire frontend from the ground up for a modern, polished aesthetic'
-			]}
-			link={{ label: 'wiselyoptimize.com', href: 'https://wiselyoptimize.com' }}
-		/>
+<section id="work" class="w-full overflow-x-clip py-20" style="background: var(--bg-elev)">
+	<div class="px-8 md:px-16">
+		<SpecLine label="Work" detail="the professional record" />
+	</div>
+	<div class="mt-12 flex flex-col gap-20">
+		<div class="relative">
+			<svg class="ghost ghost-x" viewBox="0 0 100 110" fill="none" aria-hidden="true">
+				<path class="draw draw-1" pathLength="1" d="M10 6 L90 104" />
+				<path class="draw draw-2" pathLength="1" d="M90 6 L10 104" />
+			</svg>
+			<WorkEntry
+				dock="left"
+				company="XGen AI → Zoovu"
+				summary="Composable AI for e-commerce — product recommendations and search for enterprise brands including Gucci, Sonos, Valentino, Armani, and Coach. Acquired by Zoovu in May 2026."
+				roles={[
+					{ title: 'Senior Software Engineer · Zoovu', dates: 'May 2026 – present' },
+					{ title: 'Director of Frontend Development', dates: 'Feb 2023 – May 2026' },
+					{ title: 'VP of Integrations', dates: '2022 – Feb 2023' },
+					{ title: 'Integrations Developer', dates: 'Nov 2020 – 2022' }
+				]}
+				bullets={[
+					'Led a four-person team building a composable AI platform — non-technical users configure, build, train, and deploy AI models without sacrificing capability; includes API sandboxes, element code editors, and an analytics suite',
+					'Ran a team of eight integration developers; owned prioritization across enterprise clients',
+					'Built the JavaScript SDK and DOM event-listener library used for every client integration',
+					'Built a universal product sync — any file type, format, or transfer method (HTTPS/FTP/API), with data-mutation tooling to normalize any client catalog',
+					'Built an email image-generation service for personalized recommendations without upfront compute — recs render on image request',
+					'Cut AWS costs 30%'
+				]}
+			/>
+		</div>
+		<div class="relative">
+			<svg class="ghost ghost-w" viewBox="0 0 100 110" fill="none" aria-hidden="true">
+				<path class="draw draw-w" pathLength="1" d="M6 6 L28 104 L50 30 L72 104 L94 6" />
+			</svg>
+			<WorkEntry
+				dock="right"
+				company="Wisely Optimize"
+				summary="Basketball intelligence platform used by Division 1 programs — Houston, Ole Miss, and Baylor run their rosters on it. Part-time alongside Zoovu, year-round, deep in the sport."
+				roles={[{ title: 'Basketball Engineer · part-time', dates: 'Mar 2026 – present' }]}
+				bullets={[
+					'Built the roster construction tool — NBA front-office process and predictive analytics applied to college rosters, so coaches and GMs can target the right players',
+					'Built a team strengths & weaknesses tool that analyzes season stats and calls out what to fix',
+					'Built an AI agent for fast, natural-language navigation across the whole platform',
+					'Redesigned the entire frontend from the ground up for a modern, polished aesthetic'
+				]}
+				link={{ label: 'wiselyoptimize.com', href: 'https://wiselyoptimize.com' }}
+			/>
+		</div>
 	</div>
 </section>
 
@@ -317,6 +332,54 @@
 </section>
 
 <style>
+	/* ---------- work band: ghost monograms, drawn in by scroll ---------- */
+	.ghost {
+		position: absolute;
+		top: 50%;
+		width: clamp(14rem, 28vw, 24rem);
+		transform: translateY(-50%);
+		pointer-events: none;
+		user-select: none;
+		view-timeline: --ghost;
+	}
+	.ghost-x {
+		right: -2.5rem;
+	}
+	.ghost-w {
+		left: -2.5rem;
+	}
+	.draw {
+		stroke: #ffffff1a;
+		/* width in viewBox units — non-scaling-stroke breaks dash math vs pathLength */
+		stroke-width: 0.55;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-dasharray: 1;
+		stroke-dashoffset: 1;
+		animation: draw-in 1s linear both;
+		animation-timeline: --ghost;
+	}
+	.draw-1 {
+		animation-range: entry 20% entry 90%;
+	}
+	.draw-2 {
+		animation-range: entry 70% cover 55%;
+	}
+	.draw-w {
+		animation-range: entry 20% cover 55%;
+	}
+	@keyframes draw-in {
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.draw {
+			animation: none;
+			stroke-dashoffset: 0;
+		}
+	}
+
 	.shot-wrap {
 		perspective: 1200px;
 	}
