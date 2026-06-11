@@ -6,7 +6,7 @@
  * --cta stays Apple blue for all interactive links regardless of accent.
  */
 :root {
-	--accent: #30d158;
+	--accent: #0a84ff;
 	--cta: #2997ff;
 	--bg: #08080a;
 	--bg-elev: #131315;

@@ -69,5 +69,5 @@ test('accent token is applied from layout.css', async ({ page }) => {
 	const accent = await page.evaluate(() =>
 		getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()
 	);
-	expect(accent).toBe('#30d158');
+	expect(accent).toBe('#0a84ff');
 });

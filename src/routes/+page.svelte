@@ -17,7 +17,7 @@
 <!-- ============================================================
      BAND 1 — BLACK: hero
 ============================================================ -->
-<section class="px-8 pt-28 pb-24 md:px-16">
+<section class="flex min-h-svh flex-col justify-center px-8 py-20 md:px-16">
 	<h1
 		class="max-w-5xl text-[clamp(3.4rem,9vw,7.5rem)] leading-[0.98] font-semibold tracking-[-0.035em]"
 	>
@@ -41,10 +41,10 @@
 <!-- ============================================================
      BAND 1.5 — BLACK: the short version (bio)
 ============================================================ -->
-<section class="px-8 pb-24 md:px-16">
+<section class="px-8 py-24 md:px-16">
 	<SpecLine label="The short version" />
 	<p
-		class="reveal mt-8 max-w-3xl text-[clamp(1.4rem,3vw,2.1rem)] leading-[1.35] font-medium text-[color:var(--text-3)]"
+		class="reveal mx-auto mt-10 max-w-3xl text-center text-[clamp(1.4rem,3vw,2.1rem)] leading-[1.35] font-medium text-[color:var(--text-3)]"
 	>
 		<span class="text-[color:var(--text)]">Started programming at 12</span> to run a Minecraft
 		server with friends. A bootcamp in 2020 turned the hobby into a job;
@@ -64,18 +64,6 @@
 	<SpecLine label="Work" detail="the professional record" />
 	<div class="mt-10 flex flex-col gap-6">
 		<WorkEntry
-			company="Wisely Optimize"
-			summary="Basketball intelligence platform used by Division 1 programs — Houston, Ole Miss, and Baylor run their rosters on it. Part-time, year-round, deep in the sport."
-			roles={[{ title: 'Basketball Engineer', dates: 'Mar 2026 – present' }]}
-			bullets={[
-				'Built the roster construction tool — NBA front-office process and predictive analytics applied to college rosters, so coaches and GMs can target the right players',
-				'Built a team strengths & weaknesses tool that analyzes season stats and calls out what to fix',
-				'Built an AI agent for fast, natural-language navigation across the whole platform',
-				'Redesigned the entire frontend from the ground up for a modern, polished aesthetic'
-			]}
-			link={{ label: 'wiselyoptimize.com', href: 'https://wiselyoptimize.com' }}
-		/>
-		<WorkEntry
 			company="XGen AI → Zoovu"
 			summary="Composable AI for e-commerce — product recommendations and search for enterprise brands including Gucci, Sonos, Valentino, Armani, and Coach. Acquired by Zoovu in May 2026."
 			roles={[
@@ -92,6 +80,18 @@
 				'Built an email image-generation service for personalized recommendations without upfront compute — recs render on image request',
 				'Cut AWS costs 30%'
 			]}
+		/>
+		<WorkEntry
+			company="Wisely Optimize"
+			summary="Basketball intelligence platform used by Division 1 programs — Houston, Ole Miss, and Baylor run their rosters on it. Part-time alongside Zoovu, year-round, deep in the sport."
+			roles={[{ title: 'Basketball Engineer · part-time', dates: 'Mar 2026 – present' }]}
+			bullets={[
+				'Built the roster construction tool — NBA front-office process and predictive analytics applied to college rosters, so coaches and GMs can target the right players',
+				'Built a team strengths & weaknesses tool that analyzes season stats and calls out what to fix',
+				'Built an AI agent for fast, natural-language navigation across the whole platform',
+				'Redesigned the entire frontend from the ground up for a modern, polished aesthetic'
+			]}
+			link={{ label: 'wiselyoptimize.com', href: 'https://wiselyoptimize.com' }}
 		/>
 	</div>
 </section>
