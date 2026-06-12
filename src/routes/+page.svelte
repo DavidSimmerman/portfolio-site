@@ -98,7 +98,7 @@
 				<path
 					class="draw"
 					pathLength="1"
-					d="M4 6 L21 6 L31 64 L50 20 L69 64 L79 6 L96 6 L71 104 L50 48 L29 104 Z"
+					d="M5 6 L23 6 L32 62 L46 30 L54 30 L68 62 L77 6 L95 6 L74 104 L66 104 L50 58 L34 104 L26 104 Z"
 				/>
 			</svg>
 			<WorkEntry
@@ -367,6 +367,10 @@
 		animation-timeline: --ghost;
 		/* letters sketch in early, before the panel flies in */
 		animation-range: entry 5% cover 40%;
+	}
+	/* the W has a longer perimeter — finish its draw sooner so it doesn't drag */
+	.ghost-w .draw {
+		animation-range: entry 0% entry 75%;
 	}
 	@keyframes draw-in {
 		to {
