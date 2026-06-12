@@ -98,7 +98,7 @@
 				<path
 					class="draw"
 					pathLength="1"
-					d="M9 6 L21 6 L33 77 L46 24 L54 24 L67 77 L79 6 L91 6 L74 104 L62 104 L50 55 L38 104 L26 104 Z"
+					d="M6 6 L24 6 L34 61 L43 22 L57 22 L66 61 L76 6 L94 6 L77 104 L60 104 L50 69 L40 104 L23 104 Z"
 				/>
 			</svg>
 			<WorkEntry
