@@ -56,12 +56,18 @@
 
 	let wrapEl: HTMLElement | undefined = $state();
 	let progress = $state(0);
+	// flips once when the panel peeks into view — starts the timed letter draw
+	let drawStarted = $state(false);
 	function onScroll() {
 		if (!wrapEl) return;
 		const total = wrapEl.offsetHeight - window.innerHeight;
 		const r = wrapEl.getBoundingClientRect();
 		progress = Math.min(1, Math.max(0, -r.top / total));
+		if (!drawStarted && r.top < window.innerHeight * 0.85) drawStarted = true;
 	}
+	$effect(() => {
+		if (wrapEl) onScroll();
+	});
 	const active = $derived(Math.min(roles.length - 1, Math.floor(progress * roles.length)));
 
 	function jumpTo(i: number) {
@@ -83,6 +89,7 @@
 		<svg class="ghost" viewBox="0 0 100 110" fill="none" aria-hidden="true">
 			<path
 				class="draw"
+				class:go={drawStarted}
 				pathLength="1"
 				d="M8 6 L31 6 L50 33 L69 6 L92 6 L62 55 L92 104 L69 104 L50 77 L31 104 L8 104 L38 55 Z"
 			/>
@@ -199,8 +206,8 @@
 		transform: translateY(-50%);
 		pointer-events: none;
 		user-select: none;
-		view-timeline: --ghost;
 	}
+	/* timed draw, kicked off as the panel peeks in — done by the time the pin locks */
 	.draw {
 		stroke: #ffffff1a;
 		stroke-width: 0.55;
@@ -208,9 +215,9 @@
 		stroke-linejoin: round;
 		stroke-dasharray: 1;
 		stroke-dashoffset: 1;
-		animation: draw-in 1s linear both;
-		animation-timeline: --ghost;
-		animation-range: entry 0% entry 90%;
+	}
+	.draw.go {
+		animation: draw-in 2.2s cubic-bezier(0.33, 0, 0.2, 1) both;
 	}
 	@keyframes draw-in {
 		to {
@@ -346,9 +353,9 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.panel,
-		.draw,
 		.swap-in,
-		.point {
+		.point,
+		.draw.go {
 			animation: none;
 		}
 		.draw {
