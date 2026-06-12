@@ -98,7 +98,7 @@
 				<path
 					class="draw"
 					pathLength="1"
-					d="M5 6 L23 6 L32 62 L46 30 L54 30 L68 62 L77 6 L95 6 L74 104 L66 104 L50 58 L34 104 L26 104 Z"
+					d="M9 6 L21 6 L33 77 L46 24 L54 24 L67 77 L79 6 L91 6 L74 104 L62 104 L50 55 L38 104 L26 104 Z"
 				/>
 			</svg>
 			<WorkEntry
@@ -368,9 +368,9 @@
 		/* letters sketch in early, before the panel flies in */
 		animation-range: entry 5% cover 40%;
 	}
-	/* the W has a longer perimeter — finish its draw sooner so it doesn't drag */
+	/* the W has a longer perimeter — start a touch later but still finish quickly */
 	.ghost-w .draw {
-		animation-range: entry 0% entry 75%;
+		animation-range: entry 25% entry 95%;
 	}
 	@keyframes draw-in {
 		to {
