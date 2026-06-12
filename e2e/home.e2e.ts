@@ -30,8 +30,9 @@ test('home page renders hero, sections, and working links', async ({ page }) => 
 	const cbbShot = page.locator('img[src="/images/shot-cbb.png"]');
 	await cbbShot.scrollIntoViewIfNeeded();
 	await expect(cbbShot).toBeVisible();
-	const naturalWidth = await cbbShot.evaluate((el: HTMLImageElement) => el.naturalWidth);
-	expect(naturalWidth).toBeGreaterThan(0);
+	await expect
+		.poll(() => cbbShot.evaluate((el: HTMLImageElement) => el.naturalWidth))
+		.toBeGreaterThan(0);
 });
 
 test('other-projects switcher shows one project at a time', async ({ page }) => {

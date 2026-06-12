@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SpecLine from '$lib/components/SpecLine.svelte';
-	import WorkEntry from '$lib/components/WorkEntry.svelte';
+	import WorkXGen from '$lib/components/WorkXGen.svelte';
+	import WorkWisely from '$lib/components/WorkWisely.svelte';
 	import OtherProjects from '$lib/components/OtherProjects.svelte';
 	import PoseyGallery from '$lib/components/PoseyGallery.svelte';
 
@@ -65,34 +66,7 @@
 		<SpecLine label="Work" detail="the professional record" />
 	</div>
 	<div class="mt-12 flex flex-col gap-20">
-		<div class="relative">
-			<svg class="ghost ghost-x" viewBox="0 0 100 110" fill="none" aria-hidden="true">
-				<path
-					class="draw"
-					pathLength="1"
-					d="M8 6 L31 6 L50 33 L69 6 L92 6 L62 55 L92 104 L69 104 L50 77 L31 104 L8 104 L38 55 Z"
-				/>
-			</svg>
-			<WorkEntry
-				dock="left"
-				company="XGen AI → Zoovu"
-				summary="Composable AI for e-commerce — product recommendations and search for enterprise brands including Gucci, Sonos, Valentino, Armani, and Coach. Acquired by Zoovu in May 2026."
-				roles={[
-					{ title: 'Senior Software Engineer · Zoovu', dates: 'May 2026 – present' },
-					{ title: 'Director of Frontend Development', dates: 'Feb 2023 – May 2026' },
-					{ title: 'VP of Integrations', dates: '2022 – Feb 2023' },
-					{ title: 'Integrations Developer', dates: 'Nov 2020 – 2022' }
-				]}
-				bullets={[
-					'Led a four-person team building a composable AI platform — non-technical users configure, build, train, and deploy AI models without sacrificing capability; includes API sandboxes, element code editors, and an analytics suite',
-					'Ran a team of eight integration developers; owned prioritization across enterprise clients',
-					'Built the JavaScript SDK and DOM event-listener library used for every client integration',
-					'Built a universal product sync — any file type, format, or transfer method (HTTPS/FTP/API), with data-mutation tooling to normalize any client catalog',
-					'Built an email image-generation service for personalized recommendations without upfront compute — recs render on image request',
-					'Cut AWS costs 30%'
-				]}
-			/>
-		</div>
+		<WorkXGen />
 		<div class="relative">
 			<svg class="ghost ghost-w" viewBox="0 0 100 110" fill="none" aria-hidden="true">
 				<path
@@ -101,19 +75,7 @@
 					d="M6 6 L24 6 L34 61 L43 22 L57 22 L66 61 L76 6 L94 6 L77 104 L60 104 L50 69 L40 104 L23 104 Z"
 				/>
 			</svg>
-			<WorkEntry
-				dock="right"
-				company="Wisely Optimize"
-				summary="Basketball intelligence platform used by Division 1 programs — Houston, Ole Miss, and Baylor run their rosters on it. Part-time alongside Zoovu, year-round, deep in the sport."
-				roles={[{ title: 'Basketball Engineer · part-time', dates: 'Mar 2026 – present' }]}
-				bullets={[
-					'Built the roster construction tool — NBA front-office process and predictive analytics applied to college rosters, so coaches and GMs can target the right players',
-					'Built a team strengths & weaknesses tool that analyzes season stats and calls out what to fix',
-					'Built an AI agent for fast, natural-language navigation across the whole platform',
-					'Redesigned the entire frontend from the ground up for a modern, polished aesthetic'
-				]}
-				link={{ label: 'wiselyoptimize.com', href: 'https://wiselyoptimize.com' }}
-			/>
+			<WorkWisely />
 		</div>
 	</div>
 </section>
@@ -349,9 +311,6 @@
 		user-select: none;
 		view-timeline: --ghost;
 	}
-	.ghost-x {
-		right: -2.5rem;
-	}
 	.ghost-w {
 		left: -2.5rem;
 	}
@@ -365,11 +324,7 @@
 		stroke-dashoffset: 1;
 		animation: draw-in 1s linear both;
 		animation-timeline: --ghost;
-		/* letters sketch in early, before the panel flies in */
-		animation-range: entry 5% cover 40%;
-	}
-	/* the W has a longer perimeter — start a touch later but still finish quickly */
-	.ghost-w .draw {
+		/* sketches in early, before the panel flies in */
 		animation-range: entry 25% entry 95%;
 	}
 	@keyframes draw-in {
