@@ -189,8 +189,8 @@
 
 <style>
 	.wrap {
-		/* ~30vh of scrub per section — matches the XGen pace */
-		height: 220vh;
+		/* ~20vh of scrub per section — matches the XGen pace */
+		height: 180vh;
 	}
 
 	.panel {
