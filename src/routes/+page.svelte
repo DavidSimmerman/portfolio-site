@@ -67,7 +67,8 @@
 	</div>
 	<div class="mt-12 flex flex-col gap-20">
 		<WorkXGen />
-		<div class="relative">
+		<!-- full-screen moment, same as the pinned XGen panel -->
+		<div class="relative flex min-h-svh flex-col justify-center">
 			<svg class="ghost ghost-w" viewBox="0 0 100 110" fill="none" aria-hidden="true">
 				<path
 					class="draw"

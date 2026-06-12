@@ -9,9 +9,11 @@
 		{ h: 'Frontend redesign', p: 'Entire UI rebuilt from the ground up' }
 	];
 	const programs = [
-		{ name: 'HOUSTON', cls: 'font-sans font-bold tracking-[0.2em]' },
-		{ name: 'OLE MISS', cls: 'font-serif font-medium tracking-[0.25em]' },
-		{ name: 'BAYLOR', cls: 'font-sans font-semibold tracking-[0.3em]' }
+		{ src: '/logos/houston.svg', alt: 'Houston Cougars' },
+		{ src: '/logos/olemiss.svg', alt: 'Ole Miss Rebels' },
+		{ src: '/logos/baylor.svg', alt: 'Baylor Bears' },
+		{ src: '/logos/oklahoma.svg', alt: 'Oklahoma Sooners' },
+		{ src: '/logos/okstate.svg', alt: 'Oklahoma State Cowboys' }
 	];
 </script>
 
@@ -34,8 +36,8 @@
 				</span>
 			</div>
 			<div class="stat mt-8">
-				<span class="stat-v">3</span>
-				<span class="stat-l">D1 programs on the platform</span>
+				<span class="stat-v">D1</span>
+				<span class="stat-l">programs run their rosters on it</span>
 			</div>
 			<p class="mt-6">
 				<a href="https://wiselyoptimize.com" target="_blank" rel="noopener" class="cta text-[14px]">
@@ -54,11 +56,11 @@
 			</div>
 			<div class="mt-7 border-t pt-5" style="border-color: var(--line-soft)">
 				<div class="text-[11px] font-medium tracking-[0.12em] uppercase text-[color:var(--text-4)]">
-					Run their rosters on it
+					Some of the programs on it
 				</div>
-				<div class="mt-3 flex flex-wrap items-baseline gap-x-8 gap-y-2">
+				<div class="mt-4 flex flex-wrap items-center gap-x-7 gap-y-3">
 					{#each programs as p}
-						<span class="{p.cls} text-[15px] text-[color:var(--text-3)]">{p.name}</span>
+						<img src={p.src} alt={p.alt} class="logo h-9 w-auto" loading="lazy" />
 					{/each}
 				</div>
 			</div>
@@ -137,6 +139,10 @@
 	.stat-l {
 		font-size: 13px;
 		color: var(--text-3);
+	}
+	.logo {
+		/* dark crimson/green marks need a nudge against the near-black panel */
+		filter: brightness(1.15);
 	}
 	.dot-solo {
 		width: 6px;
