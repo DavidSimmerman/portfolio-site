@@ -67,17 +67,7 @@
 	</div>
 	<div class="mt-12 flex flex-col gap-20">
 		<WorkXGen />
-		<!-- full-screen moment, same as the pinned XGen panel -->
-		<div class="relative flex min-h-svh flex-col justify-center">
-			<svg class="ghost ghost-w" viewBox="0 0 100 110" fill="none" aria-hidden="true">
-				<path
-					class="draw"
-					pathLength="1"
-					d="M6 6 L24 6 L34 61 L43 22 L57 22 L66 61 L76 6 L94 6 L77 104 L60 104 L50 69 L40 104 L23 104 Z"
-				/>
-			</svg>
-			<WorkWisely />
-		</div>
+		<WorkWisely />
 	</div>
 </section>
 
@@ -302,44 +292,6 @@
 </section>
 
 <style>
-	/* ---------- work band: ghost monograms, drawn in by scroll ---------- */
-	.ghost {
-		position: absolute;
-		top: 50%;
-		width: clamp(14rem, 28vw, 24rem);
-		transform: translateY(-50%);
-		pointer-events: none;
-		user-select: none;
-		view-timeline: --ghost;
-	}
-	.ghost-w {
-		left: -2.5rem;
-	}
-	.draw {
-		stroke: #ffffff1a;
-		/* width in viewBox units — non-scaling-stroke breaks dash math vs pathLength */
-		stroke-width: 0.55;
-		stroke-linecap: round;
-		stroke-linejoin: round;
-		stroke-dasharray: 1;
-		stroke-dashoffset: 1;
-		animation: draw-in 1s linear both;
-		animation-timeline: --ghost;
-		/* sketches in early, before the panel flies in */
-		animation-range: entry 25% entry 95%;
-	}
-	@keyframes draw-in {
-		to {
-			stroke-dashoffset: 0;
-		}
-	}
-	@media (prefers-reduced-motion: reduce) {
-		.draw {
-			animation: none;
-			stroke-dashoffset: 0;
-		}
-	}
-
 	.shot-wrap {
 		perspective: 1200px;
 	}

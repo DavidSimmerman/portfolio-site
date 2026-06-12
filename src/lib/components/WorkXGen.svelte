@@ -163,7 +163,8 @@
 
 <style>
 	.wrap {
-		height: 320vh;
+		/* ~30vh of scrub per role — quick swipes between slides */
+		height: 220vh;
 	}
 
 	.panel {
