@@ -92,7 +92,7 @@
 				class="draw"
 				pathLength="1"
 				style="stroke-dashoffset: {1 - drawP}"
-				d="M8 6 L31 6 L50 33 L69 6 L92 6 L62 55 L92 104 L69 104 L50 77 L31 104 L8 104 L38 55 Z"
+				d="M8 104 L38 55 L8 6 L31 6 L50 33 L69 6 L92 6 L62 55 L92 104 L69 104 L50 77 L31 104 Z"
 			/>
 		</svg>
 
