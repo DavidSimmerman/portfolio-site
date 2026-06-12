@@ -56,14 +56,15 @@
 
 	let wrapEl: HTMLElement | undefined = $state();
 	let progress = $state(0);
-	// flips once when the panel peeks into view — starts the timed letter draw
-	let drawStarted = $state(false);
+	// scroll-tied letter draw over the approach: starts as the letter peeks in,
+	// hits 1 exactly when the wrap top reaches the viewport top (pin lock-in)
+	let drawP = $state(0);
 	function onScroll() {
 		if (!wrapEl) return;
 		const total = wrapEl.offsetHeight - window.innerHeight;
 		const r = wrapEl.getBoundingClientRect();
 		progress = Math.min(1, Math.max(0, -r.top / total));
-		if (!drawStarted && r.top < window.innerHeight * 0.85) drawStarted = true;
+		drawP = Math.min(1, Math.max(0, 1 - r.top / (window.innerHeight * 0.7)));
 	}
 	$effect(() => {
 		if (wrapEl) onScroll();
@@ -89,8 +90,8 @@
 		<svg class="ghost" viewBox="0 0 100 110" fill="none" aria-hidden="true">
 			<path
 				class="draw"
-				class:go={drawStarted}
 				pathLength="1"
+				style="stroke-dashoffset: {1 - drawP}"
 				d="M6 6 L24 6 L34 61 L43 22 L57 22 L66 61 L76 6 L94 6 L77 104 L60 104 L50 69 L40 104 L23 104 Z"
 			/>
 		</svg>
@@ -225,22 +226,13 @@
 		pointer-events: none;
 		user-select: none;
 	}
-	/* timed draw, kicked off as the panel peeks in — done by the time the pin locks */
+	/* dash offset driven by approach scroll (inline style) — fully drawn at lock-in */
 	.draw {
 		stroke: #ffffff1a;
 		stroke-width: 0.55;
 		stroke-linecap: round;
 		stroke-linejoin: round;
 		stroke-dasharray: 1;
-		stroke-dashoffset: 1;
-	}
-	.draw.go {
-		animation: draw-in 2.2s cubic-bezier(0.33, 0, 0.2, 1) both;
-	}
-	@keyframes draw-in {
-		to {
-			stroke-dashoffset: 0;
-		}
 	}
 
 	/* ---- section rail ---- */
@@ -385,12 +377,12 @@
 	@media (prefers-reduced-motion: reduce) {
 		.panel,
 		.swap-in,
-		.point,
-		.draw.go {
+		.point {
 			animation: none;
 		}
 		.draw {
-			stroke-dashoffset: 0;
+			/* beats the inline scroll-driven offset */
+			stroke-dashoffset: 0 !important;
 		}
 	}
 </style>
