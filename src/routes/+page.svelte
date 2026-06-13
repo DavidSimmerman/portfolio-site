@@ -1,9 +1,139 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import SpecLine from '$lib/components/SpecLine.svelte';
 	import WorkXGen from '$lib/components/WorkXGen.svelte';
 	import WorkWisely from '$lib/components/WorkWisely.svelte';
 	import OtherProjects from '$lib/components/OtherProjects.svelte';
+	import Skills from '$lib/components/Skills.svelte';
 	import PoseyGallery from '$lib/components/PoseyGallery.svelte';
+
+	// Mile A Day live stats — rendered only if the fetches succeed
+	let madStreak = $state<number | null>(null);
+	let madUsers = $state<number | null>(null);
+	let madRating = $state<{ stars: number; reviews: number } | null>(null);
+	let madReviews = $state<{ rating: number; title: string; author: string; content: string }[]>([]);
+
+	// Mile A Day phone shots — one card, crossfades on a timer
+	const madPhones = [
+		{
+			src: '/images/mad-phone-streak.png',
+			alt: 'Mile A Day streak screen — current streak and daily progress'
+		},
+		{
+			src: '/images/mad-phone-compete.png',
+			alt: 'Mile A Day compete screen — clashes and weekly streaks with friends'
+		},
+		{
+			src: '/images/mad-phone-medals.png',
+			alt: 'Mile A Day medals screen — milestones and personal records'
+		}
+	];
+	let madPhoneIdx = $state(0);
+
+	onMount(() => {
+		fetch('https://mad.mindgoblin.tech/public/streak/dave')
+			.then((r) => (r.ok ? r.json() : null))
+			.then((d) => {
+				if (d?.current_streak) madStreak = d.current_streak;
+			})
+			.catch(() => {});
+		fetch('https://mad.mindgoblin.tech/public/users')
+			.then((r) => (r.ok ? r.json() : null))
+			.then((d) => {
+				if (d?.count) madUsers = d.count;
+			})
+			.catch(() => {});
+		fetch('/api/mad-rating')
+			.then((r) => (r.ok ? r.json() : null))
+			.then((d) => {
+				if (d?.stars) madRating = { stars: d.stars, reviews: d.ratingCount ?? 0 };
+				if (Array.isArray(d?.reviews)) madReviews = d.reviews;
+			})
+			.catch(() => {});
+
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		const cycle = setInterval(() => {
+			madPhoneIdx = (madPhoneIdx + 1) % madPhones.length;
+		}, 4000);
+		return () => clearInterval(cycle);
+	});
+
+	const cbbFeatures = [
+		'KenPom, EvanMiya, BartTorvik, and NET compiled into a single composite ranking',
+		'Team profile pages with advanced stats and history',
+		'Team “March” profiles to see how similar teams performed in past March Madness runs',
+		'Bracket Builder that evaluates your bracket and flags picks made against historic trends',
+		'Bracket Simulator that uses historical data to chase the first perfect bracket',
+		'Game predictions, previews, and recaps'
+	];
+
+	// CBB section staggered scroll-in (replays on re-entry, like Skills)
+	let cbbEl: HTMLElement | undefined = $state();
+	let cbbShown = $state(false);
+	// only hide-before-animate once JS is running; no-JS/hydration-fail stays visible
+	let cbbArmed = $state(false);
+	$effect(() => {
+		if (!cbbEl) return;
+		if (
+			typeof IntersectionObserver === 'undefined' ||
+			window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		) {
+			cbbShown = true;
+			return;
+		}
+		cbbArmed = true;
+		const io = new IntersectionObserver((entries) => (cbbShown = entries[0].isIntersecting), {
+			// fire once the section is meaningfully on screen, not at first pixel
+			threshold: 0.1,
+			rootMargin: '0px 0px -25% 0px'
+		});
+		io.observe(cbbEl);
+		return () => io.disconnect();
+	});
+
+	// Mile A Day section staggered scroll-in (same pattern as CBB)
+	let madEl: HTMLElement | undefined = $state();
+	let madShown = $state(false);
+	let madArmed = $state(false);
+	$effect(() => {
+		if (!madEl) return;
+		if (
+			typeof IntersectionObserver === 'undefined' ||
+			window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		) {
+			madShown = true;
+			return;
+		}
+		madArmed = true;
+		const io = new IntersectionObserver((entries) => (madShown = entries[0].isIntersecting), {
+			threshold: 0.1,
+			rootMargin: '0px 0px -25% 0px'
+		});
+		io.observe(madEl);
+		return () => io.disconnect();
+	});
+
+	// Singing fish section staggered scroll-in + click-to-play video facade
+	let fishEl: HTMLElement | undefined = $state();
+	let fishShown = $state(false);
+	let fishArmed = $state(false);
+	$effect(() => {
+		if (!fishEl) return;
+		if (
+			typeof IntersectionObserver === 'undefined' ||
+			window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		) {
+			fishShown = true;
+			return;
+		}
+		fishArmed = true;
+		const io = new IntersectionObserver((entries) => (fishShown = entries[0].isIntersecting), {
+			threshold: 0.1,
+			rootMargin: '0px 0px -25% 0px'
+		});
+		io.observe(fishEl);
+		return () => io.disconnect();
+	});
 
 	const hobbies = [
 		{ name: 'College sports', note: 'massive fan — basketball especially' },
@@ -292,19 +422,147 @@
 </section>
 
 <style>
-	.shot-wrap {
-		perspective: 1200px;
-	}
 	.shot {
 		border-radius: 14px;
 		border: 1px solid #ffffff14;
 		box-shadow: 0 30px 80px #000000a0;
 		transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 	}
-	.shot-wrap:hover .shot {
-		transform: scale(1.015);
-	}
 	.scrim {
 		background: linear-gradient(to top, #08080ae6 0%, #08080a40 40%, transparent 65%);
+	}
+
+	/* CBB section scroll-in — left column cascades, cards fade.
+	   Hidden states only apply once JS arms the section (.anim-ready),
+	   so without JS / on hydration failure the content stays visible. */
+	.c-anim {
+		transition:
+			opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+			transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+		transition-delay: calc(var(--i, 0) * 55ms);
+	}
+	.anim-ready .c-anim {
+		opacity: 0;
+		transform: translateY(16px);
+	}
+	.anim-ready .c-anim.shown {
+		opacity: 1;
+		transform: translateY(0);
+	}
+	/* cards fade only — transform left free so the hover scale still works,
+	   and the entrance delay applies to opacity only (not the hover) */
+	.c-fade {
+		transition:
+			opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+			transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+		transition-delay: calc(var(--i, 0) * 100ms), 0s;
+	}
+	.anim-ready .c-fade {
+		opacity: 0;
+	}
+	.anim-ready .c-fade.shown {
+		opacity: 1;
+	}
+	/* images gently settle from a slight zoom — its own element, so the
+	   card's hover scale never conflicts; inherits --i from the card */
+	.c-img {
+		transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+		transition-delay: calc(var(--i, 0) * 100ms);
+	}
+	.anim-ready .c-img {
+		transform: scale(1.06);
+	}
+	.anim-ready .c-img.shown {
+		transform: scale(1);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.anim-ready .c-anim,
+		.anim-ready .c-fade,
+		.anim-ready .c-img {
+			opacity: 1;
+			transform: none;
+			transition: none;
+		}
+	}
+
+	/* CBB bento — Apple-style caption cards with overlay text */
+	.bento-card {
+		position: relative;
+		overflow: hidden;
+		border-radius: 24px;
+		border: 1px solid #ffffff14;
+		background: var(--bg-elev);
+		box-shadow: 0 30px 80px #00000060;
+		transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	.bento-card:hover {
+		transform: scale(1.02);
+	}
+	.bento-cap {
+		position: absolute;
+		inset: auto 0 0 0;
+		padding: 3rem 1.5rem 1.4rem;
+		font-size: clamp(1.05rem, 1.4vw, 1.35rem);
+		font-weight: 600;
+		line-height: 1.28;
+		letter-spacing: -0.015em;
+		color: var(--text);
+		background: linear-gradient(to top, #050507f7 8%, #050507c8 42%, transparent 100%);
+		/* fade in on scroll (Chrome/Edge); plays once on load elsewhere */
+		animation: cap-fade 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+		animation-timeline: view();
+		animation-range: entry 12% cover 32%;
+	}
+	@keyframes cap-fade {
+		from {
+			opacity: 0;
+			transform: translateY(14px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.bento-cap {
+			animation: none;
+		}
+	}
+
+	/* Mile A Day collage — phone shots cascade over the website shot */
+	.mad-collage {
+		position: relative;
+		padding: 2rem 0 2.5rem;
+	}
+	.mad-base {
+		position: relative;
+		width: 94%;
+	}
+	.mad-phone-cycle {
+		position: absolute;
+		right: 8%;
+		bottom: -8%;
+		width: 27%;
+		aspect-ratio: 230 / 498;
+		z-index: 2;
+		transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	.mad-phone-img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		opacity: 0;
+		transition: opacity 0.9s ease;
+		box-shadow: 0 30px 80px #000000d0;
+	}
+	.mad-phone-img.active {
+		opacity: 1;
+	}
+	/* hover either part of the collage → both shots expand together (no z-swap) */
+	.mad-collage:hover .mad-base {
+		transform: scale(1.04);
+	}
+	.mad-collage:hover .mad-phone-cycle {
+		transform: scale(1.08);
 	}
 </style>
