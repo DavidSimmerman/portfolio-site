@@ -156,12 +156,12 @@
 		<span class="rise block" style="--d: 1">Simmerman</span>
 	</h1>
 	<p
-		class="rise mt-8 max-w-xl text-[clamp(1.3rem,2.6vw,1.9rem)] leading-[1.25] font-medium text-[color:var(--text-3)]"
+		class="rise mt-8 max-w-3xl text-[clamp(1.3rem,2.6vw,1.9rem)] leading-[1.25] font-medium text-[color:var(--text-3)]"
 		style="--d: 2"
 	>
 		Software engineer. I make complicated things feel
-		<span style="color: var(--accent)">simple</span> — AI platforms, basketball analytics, and one animatronic
-		fish.
+		<span style="color: var(--accent)">simple</span>, automate the tedious, and build tools for
+		everyday life — AI platforms, basketball analytics, and ecommerce.
 	</p>
 	<div class="rise mt-10 flex items-center gap-7 text-[15px]" style="--d: 3">
 		<a href="/#work" class="cta">See the work ›</a>
@@ -173,15 +173,15 @@
      BAND 1.5 — BLACK: the short version (bio)
 ============================================================ -->
 <section class="px-8 py-24 md:px-16">
-	<SpecLine label="The short version" />
+	<SpecLine label="My story" />
 	<p
 		class="reveal mx-auto mt-10 max-w-3xl text-center text-[clamp(1.4rem,3vw,2.1rem)] leading-[1.35] font-medium text-[color:var(--text-3)]"
 	>
-		<span class="text-[color:var(--text)]">Started programming at 12</span> to run a Minecraft
-		server with friends. A bootcamp in 2020 turned the hobby into a job;
-		<span class="text-[color:var(--text)]">XGen AI turned the job into a career</span> —
-		integrations developer to director in five years, building AI for some of the world's biggest
-		brands.
+		<span class="text-[color:var(--text)]">Started programming at 12</span> to build a Minecraft
+		server with friends. Began a computer science degree at Michigan State, but left due to medical
+		issues — took online courses instead and
+		<span class="text-[color:var(--text)]">joined XGen AI at 19</span>. Integrations developer to
+		director in five years, building AI for some of the world's biggest brands.
 		<span class="text-[color:var(--text)]">Zoovu acquired XGen in 2026.</span> These days I split my
 		time between enterprise AI and
 		<span class="text-[color:var(--text)]">Division 1 basketball analytics</span> at Wisely Optimize.
