@@ -444,29 +444,74 @@
 					GitHub ›
 				</a>
 			</div>
+			{#if madReviews.length}
+				{@const r = madReviews[0]}
+				<figure
+					class="c-anim mt-8 max-w-md rounded-2xl border p-5"
+					class:shown={madShown}
+					style="--i: 6; border-color: var(--line-soft); background: var(--bg-elev)"
+				>
+					<div class="flex items-center gap-2">
+						<span class="text-[13px] tracking-[0.15em]" style="color: var(--accent)"
+							>{'★'.repeat(r.rating)}</span
+						>
+						<span class="text-[13px] font-semibold">{r.title}</span>
+					</div>
+					<blockquote class="mt-2 text-[14.5px] leading-[1.55] text-[color:var(--text-2)]">
+						“{r.content}”
+					</blockquote>
+					<figcaption class="mt-2 text-[12.5px] text-[color:var(--text-4)]">
+						{r.author} · App Store review
+					</figcaption>
+				</figure>
+			{/if}
 		</div>
 	</div>
 
 	<!-- Singing fish -->
-	<div class="grid items-center gap-10 px-8 py-16 pb-24 md:grid-cols-[1fr_1.3fr] md:px-16">
-		<div class="reveal">
-			<h2 class="text-[clamp(2rem,4.5vw,3.4rem)] leading-[1.05] font-semibold tracking-[-0.03em]">
-				A fish with a Raspberry Pi.
+	<div
+		bind:this={fishEl}
+		class="grid items-center gap-10 px-8 py-16 pb-24 md:grid-cols-[1fr_1.3fr] md:gap-x-16 md:px-16"
+		class:anim-ready={fishArmed}
+	>
+		<div class="order-2 md:order-1">
+			<h2
+				class="c-anim text-[clamp(2rem,4.5vw,3.4rem)] leading-[1.05] font-semibold tracking-[-0.03em]"
+				class:shown={fishShown}
+				style="--i: 0"
+			>
+				Animatronic Singing Fish
 			</h2>
-			<p class="mt-6 max-w-md text-[16px] leading-[1.55] text-[color:var(--text-2)]">
-				A Billy Bass rewired with a Raspberry Pi, new speakers, and a web UI — pick any YouTube
-				video and choreograph the motors to sing along. Custom songs instead of the boring built-in
-				ones.
+			<p
+				class="c-anim mt-6 max-w-md text-[16px] leading-[1.55] text-[color:var(--text-2)]"
+				class:shown={fishShown}
+				style="--i: 1"
+			>
+				My mom saw a video of a customized singing fish belting out a sea shanty and knew she had to
+				have one of her own. She bought a Big Mouth Billy Bass and handed it to me to reprogram.
 			</p>
-			<div class="mt-6 flex items-center gap-6 text-[15px]">
-				<a
-					href="https://www.youtube.com/watch?v=3paEeTIqVgU"
-					target="_blank"
-					rel="noopener"
-					class="cta"
-				>
-					Watch the demo ›
-				</a>
+			<p
+				class="c-anim mt-4 max-w-md text-[16px] leading-[1.55] text-[color:var(--text-2)]"
+				class:shown={fishShown}
+				style="--i: 2"
+			>
+				I rewired it to run on a Raspberry Pi and built a site where she can paste any YouTube link
+				to load a song — then choreograph it with
+				<span class="text-[color:var(--text)]">three tracks, one per motor</span>, to her heart's
+				delight.
+			</p>
+			<p
+				class="c-anim mt-4 max-w-md text-[16px] leading-[1.55] text-[color:var(--text-2)]"
+				class:shown={fishShown}
+				style="--i: 3"
+			>
+				The wiring diagrams and a full build guide are on GitHub if anyone wants to make their own.
+			</p>
+			<div
+				class="c-anim mt-6 flex items-center gap-6 text-[15px]"
+				class:shown={fishShown}
+				style="--i: 4"
+			>
 				<a
 					href="https://github.com/DavidSimmerman/singing-fish"
 					target="_blank"
