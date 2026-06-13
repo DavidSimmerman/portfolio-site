@@ -522,13 +522,39 @@
 				</a>
 			</div>
 		</div>
-		<div class="reveal shot-wrap md:-mr-24" style="--vd: 0.15s">
-			<img
-				src="/images/shot-fish.jpg"
-				alt="Big Mouth Billy Bass, rewired"
-				class="shot"
-				loading="lazy"
-			/>
+		<div class="order-1 grid gap-4 md:order-2">
+			<!-- YouTube embed — the player shows its own thumbnail + play button -->
+			<div class="bento-card c-fade aspect-video" class:shown={fishShown} style="--i: 0">
+				<iframe
+					class="h-full w-full"
+					src="https://www.youtube.com/embed/3paEeTIqVgU?rel=0"
+					title="Singing Fish demo"
+					allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+					allowfullscreen
+				></iframe>
+			</div>
+			<div class="grid gap-4 sm:grid-cols-2">
+				<div class="bento-card c-fade flex flex-col" class:shown={fishShown} style="--i: 1">
+					<img
+						src="/images/fish-wiring-diagram.svg"
+						alt="Singing Fish wiring diagram — Raspberry Pi, H-bridge, and motor connections"
+						class="c-img block min-h-0 w-full flex-1 object-cover object-left-top"
+						class:shown={fishShown}
+						loading="lazy"
+					/>
+					<p class="bento-cap">The wiring diagram.</p>
+				</div>
+				<div class="bento-card c-fade flex flex-col" class:shown={fishShown} style="--i: 2">
+					<img
+						src="/images/fish-ui.png"
+						alt="Singing Fish web UI — the timeline editor with three motor tracks"
+						class="c-img block min-h-0 w-full flex-1 object-cover object-left-top"
+						class:shown={fishShown}
+						loading="lazy"
+					/>
+					<p class="bento-cap">The track editor.</p>
+				</div>
+			</div>
 		</div>
 	</div>
 </section>

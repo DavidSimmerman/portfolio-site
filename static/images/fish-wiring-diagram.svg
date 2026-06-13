@@ -1,0 +1,215 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 780" font-family="'SF Mono', 'Cascadia Code', 'Fira Code', monospace" font-size="12">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#7777bb"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1060" height="780" fill="#0e0e1a" rx="10"/>
+  <text x="530" y="32" text-anchor="middle" fill="#d8ceb8" font-size="20" font-weight="bold">Singing Fish Wiring Diagram</text>
+
+  <!-- ===== RASPBERRY PI ===== -->
+  <rect x="30" y="50" width="250" height="420" rx="10" fill="#1a2e10" stroke="#3a6a20" stroke-width="1.5"/>
+  <text x="155" y="75" text-anchor="middle" fill="#a0cc70" font-size="15" font-weight="bold">Raspberry Pi</text>
+  <text x="155" y="91" text-anchor="middle" fill="#6a9a45" font-size="10">with HiFiBerry MiniAMP</text>
+
+  <!-- Pi pins: text tight to dot, dot on right edge -->
+  <!-- Ordered to align with H-Bridge inputs for straight wires -->
+
+  <text x="222" y="130" text-anchor="end" fill="#ff8888" font-size="11" font-weight="bold">5V (Pin 2)</text>
+  <circle cx="240" cy="126" r="5" fill="#ee3333"/>
+
+  <text x="222" y="168" text-anchor="end" fill="#999" font-size="11" font-weight="bold">GND (Pin 6)</text>
+  <circle cx="240" cy="164" r="5" fill="#555"/>
+
+  <text x="222" y="216" text-anchor="end" fill="#ee88ee" font-size="11" font-weight="bold">GPIO23 (Pin 16)</text>
+  <circle cx="240" cy="212" r="5" fill="#cc44cc"/>
+
+  <text x="222" y="256" text-anchor="end" fill="#ee88ee" font-size="11" font-weight="bold">GPIO24 (Pin 18)</text>
+  <circle cx="240" cy="252" r="5" fill="#cc44cc"/>
+
+  <text x="222" y="296" text-anchor="end" fill="#66bbff" font-size="11" font-weight="bold">GPIO7 (Pin 26)</text>
+  <circle cx="240" cy="292" r="5" fill="#3399ee"/>
+
+  <text x="222" y="336" text-anchor="end" fill="#66bbff" font-size="11" font-weight="bold">GPIO8 (Pin 24)</text>
+  <circle cx="240" cy="332" r="5" fill="#3399ee"/>
+
+  <text x="222" y="380" text-anchor="end" fill="#ffbb33" font-size="11" font-weight="bold">GPIO17 (Pin 11)</text>
+  <circle cx="240" cy="376" r="5" fill="#cc8800"/>
+
+  <text x="222" y="408" text-anchor="end" fill="#ffbb33" font-size="11" font-weight="bold">GND (Pin 9)</text>
+  <circle cx="240" cy="404" r="5" fill="#806600"/>
+
+  <!-- I2S: black box behind text -->
+  <rect x="105" y="422" width="130" height="22" rx="4" fill="#000" stroke="#33aa55" stroke-width="1"/>
+  <text x="170" y="437" text-anchor="middle" fill="#55cc66" font-size="10" font-weight="bold">I2S Audio</text>
+  <circle cx="240" cy="433" r="5" fill="#33aa55"/>
+
+  <!-- ===== H-BRIDGE ===== -->
+  <rect x="440" y="50" width="250" height="310" rx="10" fill="#251212" stroke="#664040" stroke-width="1.5"/>
+  <text x="565" y="75" text-anchor="middle" fill="#dda8a8" font-size="15" font-weight="bold">Motor H-Bridge</text>
+  <text x="565" y="91" text-anchor="middle" fill="#996666" font-size="10">(L9110S or similar)</text>
+
+  <!-- H-Bridge inputs: dot on left, text right of dot -->
+  <circle cx="455" cy="126" r="4.5" fill="#ee3333"/>
+  <text x="467" y="130" fill="#ff8888" font-size="11">VCC — 5V Power</text>
+
+  <circle cx="455" cy="164" r="4.5" fill="#555"/>
+  <text x="467" y="168" fill="#999" font-size="11">GND — Ground</text>
+
+  <circle cx="455" cy="212" r="4.5" fill="#cc44cc"/>
+  <text x="467" y="216" fill="#ee88ee" font-size="11">IN1 — Mouth Close</text>
+
+  <circle cx="455" cy="252" r="4.5" fill="#cc44cc"/>
+  <text x="467" y="256" fill="#ee88ee" font-size="11">IN2 — Mouth Open</text>
+
+  <circle cx="455" cy="292" r="4.5" fill="#3399ee"/>
+  <text x="467" y="296" fill="#66bbff" font-size="11">IN3 — Head</text>
+
+  <circle cx="455" cy="332" r="4.5" fill="#3399ee"/>
+  <text x="467" y="336" fill="#66bbff" font-size="11">IN4 — Tail</text>
+
+  <!-- H-Bridge outputs: dots on right edge -->
+  <circle cx="675" cy="212" r="4.5" fill="#9977aa"/>
+  <text x="663" y="208" text-anchor="end" fill="#9977aa" font-size="9">OUT1</text>
+  <circle cx="675" cy="252" r="4.5" fill="#9977aa"/>
+  <text x="663" y="248" text-anchor="end" fill="#9977aa" font-size="9">OUT2</text>
+
+  <circle cx="675" cy="292" r="4.5" fill="#6699bb"/>
+  <text x="663" y="288" text-anchor="end" fill="#6699bb" font-size="9">OUT3</text>
+  <circle cx="675" cy="332" r="4.5" fill="#6699bb"/>
+  <text x="663" y="328" text-anchor="end" fill="#6699bb" font-size="9">OUT4</text>
+
+  <!-- ===== WIRES: Pi → H-Bridge (straight horizontal) ===== -->
+  <line x1="245" y1="126" x2="451" y2="126" stroke="#ee3333" stroke-width="2.5" opacity="0.75"/>
+  <line x1="245" y1="164" x2="451" y2="164" stroke="#555" stroke-width="2.5" opacity="0.75"/>
+  <line x1="245" y1="212" x2="451" y2="212" stroke="#cc44cc" stroke-width="2.5" opacity="0.85"/>
+  <line x1="245" y1="252" x2="451" y2="252" stroke="#cc44cc" stroke-width="2.5" opacity="0.85"/>
+  <line x1="245" y1="292" x2="451" y2="292" stroke="#3399ee" stroke-width="2.5" opacity="0.85"/>
+  <line x1="245" y1="332" x2="451" y2="332" stroke="#3399ee" stroke-width="2.5" opacity="0.85"/>
+
+  <!-- ===== MOTORS ===== -->
+  <rect x="810" y="185" width="150" height="55" rx="8" fill="#141422" stroke="#5555aa" stroke-width="1.5"/>
+  <text x="885" y="208" text-anchor="middle" fill="#aaaadd" font-size="12" font-weight="bold">Mouth Motor</text>
+  <text x="885" y="228" text-anchor="middle" fill="#7777aa" font-size="9">Open / Close</text>
+
+  <rect x="810" y="265" width="150" height="55" rx="8" fill="#141422" stroke="#5555aa" stroke-width="1.5"/>
+  <text x="885" y="288" text-anchor="middle" fill="#aaaadd" font-size="12" font-weight="bold">Head Motor</text>
+  <text x="885" y="308" text-anchor="middle" fill="#7777aa" font-size="9">Tilt / Rotate</text>
+
+  <rect x="810" y="345" width="150" height="55" rx="8" fill="#141422" stroke="#5555aa" stroke-width="1.5"/>
+  <text x="885" y="368" text-anchor="middle" fill="#aaaadd" font-size="12" font-weight="bold">Tail Motor</text>
+  <text x="885" y="388" text-anchor="middle" fill="#7777aa" font-size="9">Wag / Flap</text>
+
+  <!-- H-Bridge outputs → Motors -->
+  <line x1="680" y1="212" x2="810" y2="203" stroke="#9977aa" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="745" y="203" fill="#9977aa" font-size="8">OUT1 → Motor+</text>
+  <line x1="680" y1="252" x2="810" y2="227" stroke="#9977aa" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="745" y="245" fill="#9977aa" font-size="8">OUT2 → Motor-</text>
+
+  <line x1="680" y1="292" x2="810" y2="288" stroke="#6699bb" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="745" y="282" fill="#6699bb" font-size="8">OUT3 → Motor+</text>
+  <line x1="680" y1="332" x2="810" y2="365" stroke="#6699bb" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="745" y="356" fill="#6699bb" font-size="8">OUT4 → Motor-</text>
+
+  <!-- ===== SPEAKERS ===== -->
+  <rect x="440" y="420" width="250" height="60" rx="10" fill="#0e1a28" stroke="#336688" stroke-width="1.5"/>
+  <text x="565" y="445" text-anchor="middle" fill="#88bbdd" font-size="14" font-weight="bold">Speakers (x2)</text>
+  <text x="565" y="463" text-anchor="middle" fill="#5588aa" font-size="9">4 Ohm, 3W — via HiFiBerry screw terminals</text>
+
+  <!-- I2S wire -->
+  <path d="M245,433 L400,433 L400,450 L436,450" fill="none" stroke="#33aa55" stroke-width="2.5" opacity="0.7"/>
+
+  <!-- ===== BUTTON ===== -->
+  <rect x="440" y="500" width="250" height="55" rx="10" fill="#1a1a0e" stroke="#666640" stroke-width="1.5"/>
+  <text x="565" y="522" text-anchor="middle" fill="#cccc88" font-size="14" font-weight="bold">Push Button</text>
+  <text x="565" y="540" text-anchor="middle" fill="#999966" font-size="9">Play / Stop (optional) — 2 wires: signal + ground</text>
+
+  <!-- GPIO17 → Button (signal) -->
+  <path d="M245,376 L380,376 L380,520 L436,520" fill="none" stroke="#cc8800" stroke-width="2.5" opacity="0.8" stroke-dasharray="6,3"/>
+  <!-- GND → Button -->
+  <path d="M245,404 L370,404 L370,535 L436,535" fill="none" stroke="#806600" stroke-width="2.5" opacity="0.6" stroke-dasharray="6,3"/>
+
+  <!-- Button pin labels -->
+  <circle cx="436" cy="520" r="3" fill="#cc8800"/>
+  <circle cx="436" cy="535" r="3" fill="#806600"/>
+  <text x="690" y="522" fill="#ffbb33" font-size="8">← GPIO17 (signal)</text>
+  <text x="690" y="537" fill="#999966" font-size="8">← GND</text>
+
+  <!-- ========================================== -->
+  <!-- ===== GPIO PINOUT REFERENCE (bottom) ===== -->
+  <!-- ========================================== -->
+  <rect x="30" y="580" width="930" height="180" rx="10" fill="#121220" stroke="#2a2a44" stroke-width="1.5"/>
+  <text x="495" y="605" text-anchor="middle" fill="#d8ceb8" font-size="14" font-weight="bold">Raspberry Pi GPIO Header — Physical Pin Layout</text>
+  <text x="495" y="620" text-anchor="middle" fill="#777" font-size="9">(active pins highlighted — USB ports face down)</text>
+
+  <!-- Pin header: Top row = odd (1-39), Bottom row = even (2-40) -->
+
+  <!-- Odd row (top) -->
+  <circle cx="100" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="100" y="654" text-anchor="middle" fill="#888" font-size="7">1</text>
+  <circle cx="132" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="132" y="654" text-anchor="middle" fill="#888" font-size="7">3</text>
+  <circle cx="164" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="164" y="654" text-anchor="middle" fill="#888" font-size="7">5</text>
+  <circle cx="196" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="196" y="654" text-anchor="middle" fill="#888" font-size="7">7</text>
+  <!-- Pin 9 = GND (button) --> <circle cx="228" cy="650" r="10" fill="#806600" stroke="#aa8833" stroke-width="2"/> <text x="228" y="654" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">9</text>
+  <!-- Pin 11 = GPIO17 --> <circle cx="260" cy="650" r="10" fill="#cc8800" stroke="#ffbb33" stroke-width="2"/> <text x="260" y="654" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">11</text>
+  <circle cx="292" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="292" y="654" text-anchor="middle" fill="#888" font-size="7">13</text>
+  <circle cx="324" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="324" y="654" text-anchor="middle" fill="#888" font-size="7">15</text>
+  <circle cx="356" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="356" y="654" text-anchor="middle" fill="#888" font-size="7">17</text>
+  <circle cx="388" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="388" y="654" text-anchor="middle" fill="#888" font-size="7">19</text>
+  <circle cx="420" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="420" y="654" text-anchor="middle" fill="#888" font-size="7">21</text>
+  <circle cx="452" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="452" y="654" text-anchor="middle" fill="#888" font-size="7">23</text>
+  <circle cx="484" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="484" y="654" text-anchor="middle" fill="#888" font-size="7">25</text>
+  <circle cx="516" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="516" y="654" text-anchor="middle" fill="#888" font-size="7">27</text>
+  <circle cx="548" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="548" y="654" text-anchor="middle" fill="#888" font-size="7">29</text>
+  <circle cx="580" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="580" y="654" text-anchor="middle" fill="#888" font-size="7">31</text>
+  <circle cx="612" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="612" y="654" text-anchor="middle" fill="#888" font-size="7">33</text>
+  <circle cx="644" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="644" y="654" text-anchor="middle" fill="#888" font-size="7">35</text>
+  <circle cx="676" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="676" y="654" text-anchor="middle" fill="#888" font-size="7">37</text>
+  <circle cx="708" cy="650" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="708" y="654" text-anchor="middle" fill="#888" font-size="7">39</text>
+
+  <!-- Even row (bottom) -->
+  <!-- Pin 2 = 5V --> <circle cx="100" cy="686" r="10" fill="#ee3333" stroke="#ff7777" stroke-width="2"/> <text x="100" y="690" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">2</text>
+  <circle cx="132" cy="686" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="132" y="690" text-anchor="middle" fill="#888" font-size="7">4</text>
+  <!-- Pin 6 = GND --> <circle cx="164" cy="686" r="10" fill="#555" stroke="#999" stroke-width="2"/> <text x="164" y="690" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">6</text>
+  <circle cx="196" cy="686" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="196" y="690" text-anchor="middle" fill="#888" font-size="7">8</text>
+  <circle cx="228" cy="686" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="228" y="690" text-anchor="middle" fill="#888" font-size="7">10</text>
+  <circle cx="260" cy="686" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="260" y="690" text-anchor="middle" fill="#888" font-size="7">12</text>
+  <circle cx="292" cy="686" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="292" y="690" text-anchor="middle" fill="#888" font-size="7">14</text>
+  <!-- Pin 16 = GPIO23 --> <circle cx="324" cy="686" r="10" fill="#cc44cc" stroke="#ee88ee" stroke-width="2"/> <text x="324" y="690" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">16</text>
+  <!-- Pin 18 = GPIO24 --> <circle cx="356" cy="686" r="10" fill="#cc44cc" stroke="#ee88ee" stroke-width="2"/> <text x="356" y="690" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">18</text>
+  <circle cx="388" cy="686" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="388" y="690" text-anchor="middle" fill="#888" font-size="7">20</text>
+  <circle cx="420" cy="686" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="420" y="690" text-anchor="middle" fill="#888" font-size="7">22</text>
+  <!-- Pin 24 = GPIO8 --> <circle cx="452" cy="686" r="10" fill="#3399ee" stroke="#66bbff" stroke-width="2"/> <text x="452" y="690" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">24</text>
+  <!-- Pin 26 = GPIO7 --> <circle cx="484" cy="686" r="10" fill="#3399ee" stroke="#66bbff" stroke-width="2"/> <text x="484" y="690" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">26</text>
+  <circle cx="516" cy="686" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="516" y="690" text-anchor="middle" fill="#888" font-size="7">28</text>
+  <circle cx="548" cy="686" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="548" y="690" text-anchor="middle" fill="#888" font-size="7">30</text>
+  <circle cx="580" cy="686" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="580" y="690" text-anchor="middle" fill="#888" font-size="7">32</text>
+  <circle cx="612" cy="686" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="612" y="690" text-anchor="middle" fill="#888" font-size="7">34</text>
+  <circle cx="644" cy="686" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="644" y="690" text-anchor="middle" fill="#888" font-size="7">36</text>
+  <circle cx="676" cy="686" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="676" y="690" text-anchor="middle" fill="#888" font-size="7">38</text>
+  <circle cx="708" cy="686" r="8" fill="#333" stroke="#555" stroke-width="1"/> <text x="708" y="690" text-anchor="middle" fill="#888" font-size="7">40</text>
+
+  <!-- Row labels -->
+  <text x="75" y="654" text-anchor="end" fill="#777" font-size="9">Odd</text>
+  <text x="75" y="690" text-anchor="end" fill="#777" font-size="9">Even</text>
+
+  <!-- Pin labels above/below highlighted pins -->
+  <text x="100" y="714" text-anchor="middle" fill="#ff8888" font-size="8" font-weight="bold">5V</text>
+  <text x="164" y="714" text-anchor="middle" fill="#999" font-size="8" font-weight="bold">GND</text>
+  <text x="228" y="634" text-anchor="middle" fill="#aa8833" font-size="8" font-weight="bold">GND</text>
+  <text x="228" y="626" text-anchor="middle" fill="#aa8833" font-size="7">(button)</text>
+  <text x="260" y="634" text-anchor="middle" fill="#ffbb33" font-size="8" font-weight="bold">GPIO17</text>
+  <text x="324" y="714" text-anchor="middle" fill="#ee88ee" font-size="8" font-weight="bold">GPIO23</text>
+  <text x="356" y="714" text-anchor="middle" fill="#ee88ee" font-size="8" font-weight="bold">GPIO24</text>
+  <text x="452" y="714" text-anchor="middle" fill="#66bbff" font-size="8" font-weight="bold">GPIO8</text>
+  <text x="484" y="714" text-anchor="middle" fill="#66bbff" font-size="8" font-weight="bold">GPIO7</text>
+
+  <!-- Legend for pinout colors -->
+  <text x="780" y="645" fill="#d8ceb8" font-size="10" font-weight="bold">Legend</text>
+  <circle cx="790" cy="663" r="6" fill="#cc44cc"/> <text x="802" y="667" fill="#ee88ee" font-size="9">Mouth (GPIO23, 24)</text>
+  <circle cx="790" cy="683" r="6" fill="#3399ee"/> <text x="802" y="687" fill="#66bbff" font-size="9">Head/Tail (GPIO7, 8)</text>
+  <circle cx="790" cy="703" r="6" fill="#ee3333"/> <text x="802" y="707" fill="#ff8888" font-size="9">5V Power</text>
+  <circle cx="790" cy="723" r="6" fill="#555"/> <text x="802" y="727" fill="#999" font-size="9">Ground (H-Bridge)</text>
+  <circle cx="790" cy="743" r="6" fill="#cc8800"/> <text x="802" y="747" fill="#ffbb33" font-size="9">Button (GPIO17 + GND)</text>
+</svg>
