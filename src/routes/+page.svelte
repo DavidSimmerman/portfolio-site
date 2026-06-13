@@ -202,6 +202,16 @@
 </section>
 
 <!-- ============================================================
+     BAND 2.5 — BLACK: skills, the toolbox
+============================================================ -->
+<section id="skills" class="flex min-h-svh flex-col justify-center px-8 py-20 md:px-16">
+	<SpecLine label="Skills" detail="the toolbox" />
+	<div class="mt-12">
+		<Skills />
+	</div>
+</section>
+
+<!-- ============================================================
      BAND 3 — BLACK: personal projects (top 3)
 ============================================================ -->
 <section id="projects" class="overflow-hidden pt-20">

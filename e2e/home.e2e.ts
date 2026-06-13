@@ -12,7 +12,7 @@ test('home page renders hero, sections, and working links', async ({ page }) => 
 	await expect(nav.getByText('Resume')).toBeVisible();
 
 	// section anchors exist
-	for (const id of ['work', 'projects', 'about', 'contact']) {
+	for (const id of ['work', 'skills', 'projects', 'about', 'contact']) {
 		await expect(page.locator(`#${id}`)).toHaveCount(1);
 	}
 
@@ -63,6 +63,27 @@ test('about section has posey gallery and resume-style work entries', async ({ p
 	// posey gallery photos
 	const gallery = page.locator('figure');
 	expect(await gallery.count()).toBeGreaterThanOrEqual(6);
+});
+
+test('skills section lists all four groups below work', async ({ page }) => {
+	await page.goto('/');
+
+	const skills = page.locator('#skills');
+	for (const group of ['AI & LLMs', 'Frontend', 'Backend & data', 'Beyond the code']) {
+		await expect(skills).toContainText(group);
+	}
+
+	// sits directly after the work band
+	const order = await page.evaluate(() => {
+		const work = document.getElementById('work');
+		const skills = document.getElementById('skills');
+		return !!(
+			work &&
+			skills &&
+			work.compareDocumentPosition(skills) & Node.DOCUMENT_POSITION_FOLLOWING
+		);
+	});
+	expect(order).toBe(true);
 });
 
 test('accent token is applied from layout.css', async ({ page }) => {
