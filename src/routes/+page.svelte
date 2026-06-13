@@ -220,17 +220,47 @@
 	</div>
 
 	<!-- CBB Composite -->
-	<div class="grid items-center gap-10 px-8 py-16 md:grid-cols-[1fr_1.3fr] md:px-16">
-		<div class="reveal">
-			<h2 class="text-[clamp(2rem,4.5vw,3.4rem)] leading-[1.05] font-semibold tracking-[-0.03em]">
-				Every ranking system. One number.
+	<div
+		bind:this={cbbEl}
+		class="grid items-center gap-10 px-8 py-16 md:grid-cols-[1fr_1.3fr] md:px-16"
+		class:anim-ready={cbbArmed}
+	>
+		<div>
+			<h2
+				class="c-anim text-[clamp(2rem,4.5vw,3.4rem)] leading-[1.05] font-semibold tracking-[-0.03em]"
+				class:shown={cbbShown}
+				style="--i: 0"
+			>
+				CBB Composite Rankings
 			</h2>
-			<p class="mt-6 max-w-md text-[16px] leading-[1.55] text-[color:var(--text-2)]">
-				KenPom, EvanMiya, BartTorvik and the rest, consolidated into a single composite — plus
-				bracket building, prediction, and analysis tools that 150 people a day sweat over every
-				March.
+			<ul class="mt-7 flex max-w-md flex-col gap-3.5">
+				{#each cbbFeatures as f, i}
+					<li
+						class="c-anim flex gap-3 text-[15.5px] leading-[1.5] text-[color:var(--text-2)]"
+						class:shown={cbbShown}
+						style="--i: {i + 1}"
+					>
+						<span
+							class="mt-[0.55em] h-1.5 w-1.5 flex-none rounded-full"
+							style="background: var(--accent)"
+						></span>
+						<span>{f}</span>
+					</li>
+				{/each}
+			</ul>
+			<p
+				class="c-anim mt-9 max-w-md text-[clamp(1.2rem,1.9vw,1.5rem)] leading-[1.3] font-semibold tracking-[-0.02em]"
+				class:shown={cbbShown}
+				style="--i: 7"
+			>
+				Over <span style="color: var(--accent)">150 users</span> perfected their brackets on CBB Composite
+				last March.
 			</p>
-			<div class="mt-6 flex items-center gap-6 text-[15px]">
+			<div
+				class="c-anim mt-7 flex items-center gap-6 text-[15px]"
+				class:shown={cbbShown}
+				style="--i: 8"
+			>
 				<a href="https://cbbcomposite.com" target="_blank" rel="noopener" class="cta">
 					cbbcomposite.com ›
 				</a>
@@ -244,30 +274,158 @@
 				</a>
 			</div>
 		</div>
-		<div class="reveal shot-wrap md:-mr-24" style="--vd: 0.15s">
-			<img
-				src="/images/shot-cbb.png"
-				alt="CBB Composite rankings table"
-				class="shot"
-				loading="lazy"
-			/>
+		<div class="grid gap-4 sm:grid-cols-2">
+			<div class="flex flex-col gap-4">
+				<div class="bento-card c-fade" class:shown={cbbShown} style="--i: 0">
+					<img
+						src="/images/shot-cbb.png"
+						alt="CBB Composite rankings table"
+						class="c-img block w-full"
+						class:shown={cbbShown}
+						loading="lazy"
+					/>
+					<p class="bento-cap">Composite rankings from the top sites.</p>
+				</div>
+				<div class="bento-card c-fade flex flex-1 flex-col" class:shown={cbbShown} style="--i: 1">
+					<div
+						class="c-img flex min-h-0 flex-1 flex-col justify-center gap-2.5"
+						class:shown={cbbShown}
+					>
+						<img
+							src="/images/shot-cbb-realism-bold.png"
+							alt="CBB Composite bracket realism score — bold picks with six findings"
+							class="block w-full"
+							loading="lazy"
+						/>
+						<img
+							src="/images/shot-cbb-realism-perfect.png"
+							alt="CBB Composite bracket realism score — almost perfect bracket with four findings"
+							class="block w-full"
+							loading="lazy"
+						/>
+					</div>
+					<p class="bento-cap">Bracket builder and evaluation tool.</p>
+				</div>
+			</div>
+			<div class="bento-card c-fade flex flex-col" class:shown={cbbShown} style="--i: 2">
+				<img
+					src="/images/shot-cbb-team.png"
+					alt="CBB Composite team profile — ratings, schedule, and March projections"
+					class="c-img block min-h-0 w-full flex-1 object-cover object-top"
+					class:shown={cbbShown}
+					loading="lazy"
+				/>
+				<p class="bento-cap">Individual team profiles with March projections.</p>
+			</div>
 		</div>
 	</div>
 
 	<!-- Mile A Day -->
-	<div class="grid items-center gap-10 px-8 py-16 md:grid-cols-[1.3fr_1fr] md:px-16">
-		<div class="reveal shot-wrap order-2 md:order-1 md:-ml-24" style="--vd: 0.15s">
-			<img src="/images/shot-mileaday.png" alt="Mile A Day website" class="shot" loading="lazy" />
+	<div
+		bind:this={madEl}
+		class="grid items-center gap-12 px-8 py-16 md:grid-cols-2 md:gap-x-20 md:px-16"
+		class:anim-ready={madArmed}
+	>
+		<div
+			class="c-fade mad-collage order-2 md:order-1 md:-ml-24"
+			class:shown={madShown}
+			style="--i: 0"
+		>
+			<img
+				src="/images/shot-mileaday.png"
+				alt="Mile A Day website"
+				class="shot mad-base"
+				loading="lazy"
+			/>
+			<div class="mad-phone-cycle">
+				{#each madPhones as ph, i}
+					<img
+						src={ph.src}
+						alt={i === madPhoneIdx ? ph.alt : ''}
+						aria-hidden={i !== madPhoneIdx}
+						class="shot mad-phone-img"
+						class:active={i === madPhoneIdx}
+						loading="lazy"
+					/>
+				{/each}
+			</div>
 		</div>
-		<div class="reveal order-1 md:order-2">
-			<h2 class="text-[clamp(2rem,4.5vw,3.4rem)] leading-[1.05] font-semibold tracking-[-0.03em]">
-				A mile. Every day.
+		<div class="order-1 md:order-2">
+			<h2
+				class="c-anim text-[clamp(2rem,4.5vw,3.4rem)] leading-[1.05] font-semibold tracking-[-0.03em]"
+				class:shown={madShown}
+				style="--i: 1"
+			>
+				Mile A Day
 			</h2>
-			<p class="mt-6 max-w-md text-[16px] leading-[1.55] text-[color:var(--text-2)]">
-				An iOS running app built with a friend — streaks, challenges, and friendly competition that
-				keep 50-plus runners moving daily.
+			<p
+				class="c-anim mt-6 max-w-md text-[16px] leading-[1.55] text-[color:var(--text-2)]"
+				class:shown={madShown}
+				style="--i: 2"
+			>
+				An iOS running app built with a friend. It started as a bet to push each other to run more —
+				but after months of neither of us missing a day, it turned into a lifestyle.
+				<span class="text-[color:var(--text)]">One mile. Every day. No exceptions.</span>
 			</p>
-			<div class="mt-6 flex items-center gap-6 text-[15px]">
+			<p
+				class="c-anim mt-4 max-w-md text-[16px] leading-[1.55] text-[color:var(--text-2)]"
+				class:shown={madShown}
+				style="--i: 3"
+			>
+				Now it's built to get anyone out the door for their daily mile — run or walk. It tracks your
+				streak, hands out medals for milestones worth chasing, and pits you against friends so you
+				push each other to stay active.
+			</p>
+			{#if madStreak || madUsers || madRating}
+				<div
+					class="c-anim flex flex-wrap gap-x-10 gap-y-4 pt-7"
+					class:shown={madShown}
+					style="--i: 4"
+				>
+					{#if madStreak}
+						<div>
+							<div
+								class="text-[clamp(1.8rem,3vw,2.4rem)] font-semibold tracking-[-0.03em]"
+								style="color: var(--accent)"
+							>
+								{madStreak}
+							</div>
+							<div class="mt-0.5 text-[13px] text-[color:var(--text-3)]">
+								day streak — mine, live from the app
+							</div>
+						</div>
+					{/if}
+					{#if madUsers}
+						<div>
+							<div
+								class="text-[clamp(1.8rem,3vw,2.4rem)] font-semibold tracking-[-0.03em]"
+								style="color: var(--accent)"
+							>
+								{madUsers}
+							</div>
+							<div class="mt-0.5 text-[13px] text-[color:var(--text-3)]">runners on the app</div>
+						</div>
+					{/if}
+					{#if madRating}
+						<div>
+							<div
+								class="text-[clamp(1.8rem,3vw,2.4rem)] font-semibold tracking-[-0.03em]"
+								style="color: var(--accent)"
+							>
+								{madRating.stars.toFixed(1)}★
+							</div>
+							<div class="mt-0.5 text-[13px] text-[color:var(--text-3)]">
+								App Store, {madRating.reviews} review{madRating.reviews === 1 ? '' : 's'}
+							</div>
+						</div>
+					{/if}
+				</div>
+			{/if}
+			<div
+				class="c-anim mt-6 flex items-center gap-6 text-[15px]"
+				class:shown={madShown}
+				style="--i: 5"
+			>
 				<a
 					href="https://apps.apple.com/us/app/mile-a-day/id6746970905"
 					target="_blank"
