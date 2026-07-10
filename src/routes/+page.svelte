@@ -676,14 +676,31 @@
 <!-- ============================================================
      BAND 6 — closer
 ============================================================ -->
-<section id="contact" class="px-8 pt-10 pb-14 md:px-16">
+<section
+	id="contact"
+	class="relative flex min-h-[70svh] flex-col justify-center px-8 py-24 md:px-16"
+>
+	<!-- the hero's light comes back for the goodbye -->
+	<div class="aurora" aria-hidden="true">
+		<span class="blob b4"></span>
+		<span class="blob b5"></span>
+	</div>
 	<h2
 		class="reveal max-w-3xl text-[clamp(2.4rem,6vw,4.5rem)] leading-[1.02] font-semibold tracking-[-0.03em]"
 	>
 		Let's build something.
 	</h2>
-	<div class="reveal mt-7 flex items-center gap-8 text-[15px]" style="--vd: 0.1s">
-		<a href="mailto:david@simmerman.tech" class="cta">david@simmerman.tech ›</a>
+	<p class="reveal mt-5 max-w-md text-[16px] leading-[1.55] text-[color:var(--text-3)]">
+		Email is the fast lane — I actually answer it.
+	</p>
+	<a
+		href="mailto:david@simmerman.tech"
+		class="mega-mail reveal mt-7 self-start text-[clamp(1.5rem,4.2vw,3.4rem)] leading-[1.1]"
+		style="--vd: 0.08s"
+	>
+		david@simmerman.tech
+	</a>
+	<div class="reveal mt-12 flex items-center gap-8 text-[15px]" style="--vd: 0.16s">
 		<a href="https://github.com/DavidSimmerman" target="_blank" rel="noopener" class="cta">
 			GitHub ›
 		</a>
@@ -695,6 +712,7 @@
 		>
 			LinkedIn ›
 		</a>
+		<a href="/resume.pdf" class="cta">Resume ›</a>
 	</div>
 </section>
 
@@ -753,6 +771,48 @@
 		to {
 			transform: translate3d(-5vw, -9vh, 0) scale(1.14);
 		}
+	}
+	/* contact reprise — same light, lower and quieter */
+	.b4 {
+		width: max(48vw, 22rem);
+		height: max(48vw, 22rem);
+		left: -10%;
+		bottom: -35%;
+		background: radial-gradient(closest-side, #0a84ff3a, transparent 72%);
+		animation: drift-2 30s ease-in-out infinite alternate;
+	}
+	.b5 {
+		width: max(34vw, 16rem);
+		height: max(34vw, 16rem);
+		right: 2%;
+		top: -12%;
+		background: radial-gradient(closest-side, #64d2ff24, transparent 72%);
+		animation: drift-3 36s ease-in-out infinite alternate;
+	}
+
+	/* the big email link — gradient underline sweeps in on hover/focus */
+	.mega-mail {
+		position: relative;
+		display: inline-block;
+		font-weight: 600;
+		letter-spacing: -0.03em;
+		color: var(--text);
+	}
+	.mega-mail::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		bottom: -0.08em;
+		height: 2px;
+		width: 100%;
+		background: linear-gradient(90deg, var(--accent), #64d2ff);
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	.mega-mail:hover::after,
+	.mega-mail:focus-visible::after {
+		transform: scaleX(1);
 	}
 
 	/* Scroll cue — hairline that pulses downward, fades away once you scroll */
