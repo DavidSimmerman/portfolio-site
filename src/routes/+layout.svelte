@@ -47,6 +47,18 @@
 		name="description"
 		content="Software engineer in Tampa, FL. AI platforms, basketball analytics, and one animatronic fish."
 	/>
+	<!-- link previews (Slack/iMessage/LinkedIn) -->
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="David Simmerman — Software Engineer" />
+	<meta
+		property="og:description"
+		content="Software engineer in Tampa, FL. AI platforms, basketball analytics, and one animatronic fish."
+	/>
+	<meta property="og:url" content="https://simmerman.tech" />
+	<meta property="og:image" content="https://simmerman.tech/images/og.png" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
 
 <svelte:window onkeydown={(e) => e.key === 'Escape' && (menuOpen = false)} />
