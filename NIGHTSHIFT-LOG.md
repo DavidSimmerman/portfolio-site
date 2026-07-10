@@ -13,13 +13,13 @@ version first. No AI slop. Site = job-hunting front door.
       good/human already; Switzer loads fine via Fontshare; work/skills/projects sections
       already strong.
 - [x] 1. Hero signature — aurora glow field (Apple systemBlue/Indigo/Cyan), pointer
-      parallax, scroll cue; faint reprise in contact closer (bookends) — `c7096d1`
+     parallax, scroll cue; faint reprise in contact closer (bookends) — `c7096d1`
 - [x] 2. Nav — active-section highlight, scroll-progress hairline, mobile overlay menu
 - [x] 3. Contact finale — full-height closer, giant email CTA w/ gradient underline
 - [x] 4. Micro-polish — sliding underline CTAs, focus-visible rings, bento hover border
 - [x] 5. OG/social meta + generated og image (canonical URL assumed
-      `https://simmerman.tech` — from the email domain; fix the two `og:` URLs in
-      +layout.svelte if the real domain differs)
+     `https://simmerman.tech` — from the email domain; fix the two `og:` URLs in
+     +layout.svelte if the real domain differs)
 - [ ] Verify: e2e green, fresh screenshots desktop + mobile
 - [ ] `codex review --uncommitted` + address findings
 - [ ] Final commit + wake-up message

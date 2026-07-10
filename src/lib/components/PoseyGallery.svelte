@@ -48,7 +48,14 @@
 				class:tucking={leaving === i}
 				style="--jit: {jitter[i % jitter.length]}deg; z-index: {leaving === i ? 50 : 40 - d}"
 			>
-				<img src={p.src} alt={p.caption} width={p.w} height={p.h} loading="lazy" draggable="false" />
+				<img
+					src={p.src}
+					alt={p.caption}
+					width={p.w}
+					height={p.h}
+					loading="lazy"
+					draggable="false"
+				/>
 				<figcaption>{p.caption}</figcaption>
 			</figure>
 		{/each}

@@ -880,7 +880,9 @@
 				cue-in 1s ease 1.6s forwards,
 				cue-fade linear both;
 			animation-timeline: auto, scroll();
-			animation-range: normal, 0 240px;
+			animation-range:
+				normal,
+				0 240px;
 		}
 	}
 	@keyframes cue-fade {

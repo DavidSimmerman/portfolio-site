@@ -123,8 +123,5 @@ test('hero aurora and contact email CTA render', async ({ page }) => {
 	await expect(page.locator('.aurora').first()).toHaveAttribute('aria-hidden', 'true');
 
 	// giant mail CTA points at the real address
-	await expect(page.locator('.mega-mail')).toHaveAttribute(
-		'href',
-		'mailto:david@simmerman.tech'
-	);
+	await expect(page.locator('.mega-mail')).toHaveAttribute('href', 'mailto:david@simmerman.tech');
 });
