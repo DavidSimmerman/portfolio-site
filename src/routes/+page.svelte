@@ -135,6 +135,38 @@
 		return () => io.disconnect();
 	});
 
+	// hero aurora — gentle pointer parallax (fine pointers, motion allowed)
+	let auroraEl: HTMLElement | undefined = $state();
+	onMount(() => {
+		if (
+			!auroraEl ||
+			window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+			!window.matchMedia('(pointer: fine)').matches
+		)
+			return;
+		let tx = 0,
+			ty = 0,
+			cx = 0,
+			cy = 0,
+			raf = 0;
+		const tick = () => {
+			cx += (tx - cx) * 0.06;
+			cy += (ty - cy) * 0.06;
+			auroraEl!.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+			raf = Math.abs(tx - cx) + Math.abs(ty - cy) > 0.1 ? requestAnimationFrame(tick) : 0;
+		};
+		const onMove = (e: PointerEvent) => {
+			tx = (e.clientX / window.innerWidth - 0.5) * 56;
+			ty = (e.clientY / window.innerHeight - 0.5) * 36;
+			if (!raf) raf = requestAnimationFrame(tick);
+		};
+		window.addEventListener('pointermove', onMove, { passive: true });
+		return () => {
+			window.removeEventListener('pointermove', onMove);
+			cancelAnimationFrame(raf);
+		};
+	});
+
 	const hobbies = [
 		{ name: 'College sports', note: 'massive fan — basketball especially' },
 		{ name: 'Running & lifting', note: 'yes, I use my own running app' },
@@ -148,7 +180,12 @@
 <!-- ============================================================
      BAND 1 — BLACK: hero
 ============================================================ -->
-<section class="flex min-h-svh flex-col justify-center px-8 py-20 md:px-16">
+<section class="relative flex min-h-svh flex-col justify-center px-8 py-20 md:px-16">
+	<div class="aurora" aria-hidden="true" bind:this={auroraEl}>
+		<span class="blob b1"></span>
+		<span class="blob b2"></span>
+		<span class="blob b3"></span>
+	</div>
 	<h1
 		class="max-w-5xl text-[clamp(3.4rem,9vw,7.5rem)] leading-[0.98] font-semibold tracking-[-0.035em]"
 	>
@@ -167,6 +204,7 @@
 		<a href="/#work" class="cta">See the work ›</a>
 		<a href="/#contact" class="cta">Get in touch ›</a>
 	</div>
+	<div class="scroll-cue" aria-hidden="true"></div>
 </section>
 
 <!-- ============================================================
@@ -661,6 +699,129 @@
 </section>
 
 <style>
+	/* Hero aurora — ambient light in the Apple system palette (blue/indigo/cyan).
+	   z-index -1 keeps it behind the text; container is clipped so blobs never
+	   cause scrollbars. Pointer parallax is applied to .aurora from JS. */
+	.aurora {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		overflow: clip;
+		pointer-events: none;
+	}
+	.blob {
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(70px);
+		will-change: transform;
+	}
+	.b1 {
+		width: max(55vw, 26rem);
+		height: max(55vw, 26rem);
+		left: 38%;
+		top: -20%;
+		background: radial-gradient(closest-side, #0a84ff4a, transparent 72%);
+		animation: drift-1 26s ease-in-out infinite alternate;
+	}
+	.b2 {
+		width: max(42vw, 20rem);
+		height: max(42vw, 20rem);
+		left: -8%;
+		top: 42%;
+		background: radial-gradient(closest-side, #5e5ce634, transparent 72%);
+		animation: drift-2 34s ease-in-out infinite alternate;
+	}
+	.b3 {
+		width: max(36vw, 17rem);
+		height: max(36vw, 17rem);
+		right: -4%;
+		top: 30%;
+		background: radial-gradient(closest-side, #64d2ff30, transparent 72%);
+		animation: drift-3 30s ease-in-out infinite alternate;
+	}
+	@keyframes drift-1 {
+		to {
+			transform: translate3d(-7vw, 8vh, 0) scale(1.18);
+		}
+	}
+	@keyframes drift-2 {
+		to {
+			transform: translate3d(6vw, -6vh, 0) scale(0.92);
+		}
+	}
+	@keyframes drift-3 {
+		to {
+			transform: translate3d(-5vw, -9vh, 0) scale(1.14);
+		}
+	}
+
+	/* Scroll cue — hairline that pulses downward, fades away once you scroll */
+	.scroll-cue {
+		position: absolute;
+		left: 50%;
+		bottom: 1.9rem;
+		width: 1px;
+		height: 54px;
+		background: #f5f5f716;
+		opacity: 0;
+		animation: cue-in 1s ease 1.6s forwards;
+	}
+	.scroll-cue::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(to bottom, transparent, #f5f5f7a0);
+		transform-origin: top;
+		animation: cue-drop 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+	}
+	@keyframes cue-in {
+		to {
+			opacity: 1;
+		}
+	}
+	@keyframes cue-drop {
+		0% {
+			transform: scaleY(0);
+			opacity: 0;
+		}
+		35% {
+			opacity: 1;
+		}
+		70% {
+			transform: scaleY(1);
+			opacity: 1;
+		}
+		100% {
+			transform: scaleY(1);
+			opacity: 0;
+		}
+	}
+	@supports (animation-timeline: scroll()) {
+		.scroll-cue {
+			animation:
+				cue-in 1s ease 1.6s forwards,
+				cue-fade linear both;
+			animation-timeline: auto, scroll();
+			animation-range: normal, 0 240px;
+		}
+	}
+	@keyframes cue-fade {
+		to {
+			opacity: 0;
+			visibility: hidden;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.blob,
+		.scroll-cue,
+		.scroll-cue::after {
+			animation: none;
+		}
+		.scroll-cue {
+			opacity: 1;
+		}
+	}
+
 	.shot {
 		border-radius: 14px;
 		border: 1px solid #ffffff14;
