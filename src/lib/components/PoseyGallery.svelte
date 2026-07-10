@@ -1,12 +1,17 @@
 <script lang="ts">
 	const photos = [
-		{ src: '/images/posey-sunglasses.png', caption: 'Chief morale officer.' },
-		{ src: '/images/posey-puppy.jpeg', caption: 'Day one.' },
-		{ src: '/images/posey-mountain.png', caption: 'Summit crew, Appalachians.' },
-		{ src: '/images/posey-snow.png', caption: 'First snow. Unbothered.' },
-		{ src: '/images/posey-recliner.png', caption: "That's her chair now." },
-		{ src: '/images/posey-couch.png', caption: 'Fetch training going great.' },
-		{ src: '/images/posey-sit.png', caption: 'Waiting for the OK to eat the floor steak.' }
+		{ src: '/images/posey-sunglasses.png', caption: 'Chief morale officer.', w: 1536, h: 2048 },
+		{ src: '/images/posey-puppy.jpeg', caption: 'Day one.', w: 3024, h: 4032 },
+		{ src: '/images/posey-mountain.png', caption: 'Summit crew, Appalachians.', w: 1536, h: 2048 },
+		{ src: '/images/posey-snow.png', caption: 'First snow. Unbothered.', w: 1536, h: 2048 },
+		{ src: '/images/posey-recliner.png', caption: "That's her chair now.", w: 1536, h: 2048 },
+		{ src: '/images/posey-couch.png', caption: 'Fetch training going great.', w: 1536, h: 2048 },
+		{
+			src: '/images/posey-sit.png',
+			caption: 'Waiting for the OK to eat the floor steak.',
+			w: 1536,
+			h: 2048
+		}
 	];
 
 	let idx = $state(0);
@@ -43,7 +48,7 @@
 				class:tucking={leaving === i}
 				style="--jit: {jitter[i % jitter.length]}deg; z-index: {leaving === i ? 50 : 40 - d}"
 			>
-				<img src={p.src} alt={p.caption} loading="lazy" draggable="false" />
+				<img src={p.src} alt={p.caption} width={p.w} height={p.h} loading="lazy" draggable="false" />
 				<figcaption>{p.caption}</figcaption>
 			</figure>
 		{/each}

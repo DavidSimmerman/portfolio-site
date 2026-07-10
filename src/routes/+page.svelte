@@ -318,6 +318,8 @@
 					<img
 						src="/images/shot-cbb.png"
 						alt="CBB Composite rankings table"
+						width="1440"
+						height="900"
 						class="c-img block w-full"
 						class:shown={cbbShown}
 						loading="lazy"
@@ -332,12 +334,16 @@
 						<img
 							src="/images/shot-cbb-realism-bold.png"
 							alt="CBB Composite bracket realism score — bold picks with six findings"
+							width="820"
+							height="488"
 							class="block w-full"
 							loading="lazy"
 						/>
 						<img
 							src="/images/shot-cbb-realism-perfect.png"
 							alt="CBB Composite bracket realism score — almost perfect bracket with four findings"
+							width="820"
+							height="354"
 							class="block w-full"
 							loading="lazy"
 						/>
@@ -349,6 +355,8 @@
 				<img
 					src="/images/shot-cbb-team.png"
 					alt="CBB Composite team profile — ratings, schedule, and March projections"
+					width="1099"
+					height="1974"
 					class="c-img block min-h-0 w-full flex-1 object-cover object-top"
 					class:shown={cbbShown}
 					loading="lazy"
@@ -372,6 +380,8 @@
 			<img
 				src="/images/shot-mileaday.png"
 				alt="Mile A Day website"
+				width="1440"
+				height="900"
 				class="shot mad-base"
 				loading="lazy"
 			/>
@@ -381,6 +391,8 @@
 						src={ph.src}
 						alt={i === madPhoneIdx ? ph.alt : ''}
 						aria-hidden={i !== madPhoneIdx}
+						width="230"
+						height="498"
 						class="shot mad-phone-img"
 						class:active={i === madPhoneIdx}
 						loading="lazy"
@@ -576,6 +588,8 @@
 					<img
 						src="/images/fish-wiring-diagram.svg"
 						alt="Singing Fish wiring diagram — Raspberry Pi, H-bridge, and motor connections"
+						width="1060"
+						height="780"
 						class="c-img block min-h-0 w-full flex-1 object-cover object-left-top"
 						class:shown={fishShown}
 						loading="lazy"
@@ -586,6 +600,8 @@
 					<img
 						src="/images/fish-ui.png"
 						alt="Singing Fish web UI — the timeline editor with three motor tracks"
+						width="1906"
+						height="938"
 						class="c-img block min-h-0 w-full flex-1 object-cover object-left-top"
 						class:shown={fishShown}
 						loading="lazy"
@@ -616,6 +632,8 @@
 		<img
 			src="/images/hike-wide.png"
 			alt="David and Posey on a mountain summit"
+			width="1206"
+			height="531"
 			class="parallax h-[70vh] w-full object-cover"
 			loading="lazy"
 		/>

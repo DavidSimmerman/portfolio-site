@@ -95,3 +95,36 @@ test('accent token is applied from layout.css', async ({ page }) => {
 	);
 	expect(accent).toBe('#0a84ff');
 });
+
+test('mobile menu opens, navigates, and closes', async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto('/');
+
+	const burger = page.getByRole('button', { name: 'Open menu' });
+	await expect(burger).toBeVisible();
+	await burger.click();
+
+	const overlay = page.locator('.m-overlay');
+	await expect(overlay).toBeVisible();
+	for (const label of ['Work', 'Skills', 'Projects', 'About', 'Contact', 'Resume']) {
+		await expect(overlay.getByRole('link', { name: label })).toBeVisible();
+	}
+
+	await overlay.getByRole('link', { name: 'Contact' }).click();
+	await expect(overlay).toBeHidden();
+	await expect(page.locator('#contact')).toBeInViewport();
+});
+
+test('hero aurora and contact email CTA render', async ({ page }) => {
+	await page.goto('/');
+
+	// aurora blobs exist and are purely decorative
+	expect(await page.locator('.aurora .blob').count()).toBeGreaterThanOrEqual(3);
+	await expect(page.locator('.aurora').first()).toHaveAttribute('aria-hidden', 'true');
+
+	// giant mail CTA points at the real address
+	await expect(page.locator('.mega-mail')).toHaveAttribute(
+		'href',
+		'mailto:david@simmerman.tech'
+	);
+});

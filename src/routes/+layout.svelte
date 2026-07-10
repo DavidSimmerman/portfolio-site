@@ -38,6 +38,13 @@
 		document.documentElement.classList.toggle('overflow-hidden', menuOpen);
 		return () => document.documentElement.classList.remove('overflow-hidden');
 	});
+
+	// unlock synchronously so the anchor jump isn't swallowed by the scroll lock
+	// (the $effect above runs on a microtask — after the browser's default nav)
+	function closeMenu() {
+		menuOpen = false;
+		document.documentElement.classList.remove('overflow-hidden');
+	}
 </script>
 
 <svelte:head>
@@ -102,7 +109,7 @@
 		transition:fade={{ duration: 180 }}
 	>
 		{#each [...navLinks, { label: 'Resume', href: '/resume.pdf' }] as l, i}
-			<a href={l.href} class="m-link" style="--i: {i}" onclick={() => (menuOpen = false)}>
+			<a href={l.href} class="m-link" style="--i: {i}" onclick={closeMenu}>
 				{l.label}
 			</a>
 		{/each}

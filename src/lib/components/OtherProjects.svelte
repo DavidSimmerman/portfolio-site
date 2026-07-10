@@ -12,7 +12,7 @@
 		/** 'portrait' lays shots beside the text; 'landscape' stacks them */
 		orientation: 'portrait' | 'landscape';
 		/** preview screenshots, fully shown (never cropped) */
-		shots: string[];
+		shots: { src: string; w: number; h: number }[];
 		/** small centered glyph used when there are no screenshots */
 		icon?: string;
 		/** fallback / accent gradient */
@@ -28,7 +28,7 @@
 			github: 'https://github.com/DavidSimmerman/discovery',
 			live: { label: 'discovery.simmerman.tech', href: 'https://discovery.simmerman.tech' },
 			orientation: 'portrait',
-			shots: ['/images/op-discovery.png'],
+			shots: [{ src: '/images/op-discovery.png', w: 1206, h: 1812 }],
 			grad: 'linear-gradient(135deg,#1DB954,#0a3d20)'
 		},
 		{
@@ -40,7 +40,10 @@
 			live: { label: 'movie-szn.simmerman.tech', href: 'https://movie-szn.simmerman.tech' },
 			orientation: 'landscape',
 			// op-movie-szn.png (Season Awards) is refreshed by scripts/shoot-awards.mjs
-			shots: ['/images/op-movie-szn.png', '/images/op-movie-szn-hero.png'],
+			shots: [
+				{ src: '/images/op-movie-szn.png', w: 2048, h: 1220 },
+				{ src: '/images/op-movie-szn-hero.png', w: 980, h: 480 }
+			],
 			grad: 'linear-gradient(135deg,#e50914,#3a0a0d)'
 		},
 		{
@@ -72,7 +75,10 @@
 			github: 'https://github.com/DavidSimmerman/giddey',
 			live: { label: 'giddey.simmerman.tech', href: 'https://giddey.simmerman.tech' },
 			orientation: 'portrait',
-			shots: ['/images/op-giddey.png', '/images/op-giddey-2.png'],
+			shots: [
+				{ src: '/images/op-giddey.png', w: 409, h: 885 },
+				{ src: '/images/op-giddey-2.png', w: 409, h: 885 }
+			],
 			grad: 'linear-gradient(135deg,#e8833a,#5c2a06)'
 		}
 	];
@@ -127,18 +133,20 @@
 						style="background: {hasShots ? '#0b0b0d' : p.grad}"
 					>
 						{#if hasShots}
-							{#each p.shots as src}
+							{#each p.shots as shot}
 								<div class="relative min-h-0 min-w-0 flex-1">
 									<img
-										{src}
+										src={shot.src}
 										alt="{p.name} screenshot"
+										width={shot.w}
+										height={shot.h}
 										loading="lazy"
 										class="absolute inset-0 h-full w-full object-contain"
 									/>
 								</div>
 							{/each}
 						{:else if p.icon}
-							<img src={p.icon} alt="" class="m-auto w-20 opacity-95" />
+							<img src={p.icon} alt="" width="48" height="48" class="m-auto w-20 opacity-95" />
 						{/if}
 					</div>
 				</div>
@@ -156,8 +164,10 @@
 					<div class="flex h-full">
 						<div class="relative w-[44%] shrink-0 p-3" style="background: #0b0b0d">
 							<img
-								src={p.shots[0]}
+								src={p.shots[0].src}
 								alt="{p.name} preview"
+								width={p.shots[0].w}
+								height={p.shots[0].h}
 								loading="lazy"
 								class="absolute inset-0 h-full w-full object-contain p-1"
 							/>
@@ -176,8 +186,10 @@
 						>
 							{#if hasShots}
 								<img
-									src={p.shots[0]}
+									src={p.shots[0].src}
 									alt="{p.name} preview"
+									width={p.shots[0].w}
+									height={p.shots[0].h}
 									loading="lazy"
 									class="absolute inset-0 h-full w-full object-contain p-3"
 								/>
@@ -185,6 +197,8 @@
 								<img
 									src={p.icon}
 									alt=""
+									width="48"
+									height="48"
 									class="absolute top-1/2 left-1/2 w-16 -translate-x-1/2 -translate-y-1/2 opacity-95"
 								/>
 							{/if}
