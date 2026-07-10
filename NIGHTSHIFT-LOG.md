@@ -25,9 +25,28 @@ version first. No AI slop. Site = job-hunting front door.
       `pnpm lint` clean. Bonus fix found by the new e2e: lazy images had no intrinsic
       dimensions → layout shift broke anchor scrolling from the menu; added width/height
       everywhere (also fixes CLS).
-- [ ] `codex review --base main` + address findings (first attempt at xhigh effort was
-      OOM/timeout-killed; rerunning at medium effort in background)
-- [ ] Final commit + wake-up message
+- [x] `codex review --base main` — verdict: "main site changes appear sound." One P3
+      (screenshot helper swallowed ENOENT) — fixed in `5328f71`. It also implicitly
+      caught that new code wasn't prettier-formatted — fixed in `575eb70`.
+      (First attempt at xhigh effort was OOM/timeout-killed; medium effort completed.)
+- [x] Final e2e re-run after all fixes: 7/7 green.
+- [x] Final commit + wake-up message
+
+## Done — summary of what changed
+
+1. **Hero** — ambient aurora glow (Apple systemBlue/Indigo/Cyan radial blobs, slow drift),
+   pointer parallax on fine pointers, pulsing scroll cue that fades on scroll.
+2. **Nav** — active-section accent dot (IntersectionObserver), scroll-progress hairline
+   (pure CSS scroll timeline), real mobile menu: burger → frosted overlay w/ staggered links.
+3. **Contact** — full-height finale, giant email CTA with gradient underline sweep, aurora
+   reprise bookending the page.
+4. **Micro-polish** — CTA underlines slide in, keyboard focus rings, bento hover border.
+5. **Link previews** — OG/Twitter meta + generated 1200×630 og.png.
+6. **Fixes found along the way** — mobile menu anchor nav was swallowed by the scroll lock
+   (sync unlock); lazy images had no intrinsic size → layout shift broke anchor jumps and
+   hurt CLS (added width/height everywhere).
+
+All motion respects prefers-reduced-motion; scroll-driven bits degrade gracefully off Chromium.
 
 ## Decisions
 
