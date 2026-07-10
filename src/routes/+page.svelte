@@ -953,10 +953,13 @@
 		border: 1px solid #ffffff14;
 		background: var(--bg-elev);
 		box-shadow: 0 30px 80px #00000060;
-		transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+		transition:
+			transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+			border-color 0.5s ease;
 	}
 	.bento-card:hover {
 		transform: scale(1.02);
+		border-color: #ffffff30;
 	}
 	.bento-cap {
 		position: absolute;
