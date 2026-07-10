@@ -4,6 +4,14 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+	// sandbox: serve through the Cloudflare tunnel (Vite host-check + HMR over wss:443)
+	server: {
+		host: true,
+		port: 5182,
+		strictPort: true,
+		allowedHosts: ['.simmerman.cc'],
+		hmr: { protocol: 'wss', clientPort: 443 }
+	},
 	plugins: [
 		tailwindcss(),
 		sveltekit({

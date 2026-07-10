@@ -574,7 +574,7 @@
 ============================================================ -->
 <section id="about">
 	<!-- full-bleed photo, edge to edge -->
-	<div class="relative">
+	<div class="relative overflow-hidden">
 		<img
 			src="/images/hike-wide.png"
 			alt="David and Posey on a mountain summit"

@@ -35,20 +35,22 @@ test('home page renders hero, sections, and working links', async ({ page }) => 
 		.toBeGreaterThan(0);
 });
 
-test('other-projects switcher shows one project at a time', async ({ page }) => {
+test('other-projects bento features one project and switches on click', async ({ page }) => {
 	await page.goto('/');
-	const tabs = page.getByRole('tab');
-	await expect(tabs).toHaveCount(5);
 
-	// Discovery selected by default
-	await expect(page.getByRole('heading', { name: 'Discovery' })).toBeVisible();
-	await expect(page.getByRole('heading', { name: 'Giddey' })).toHaveCount(0);
+	// every project is always present as a card heading (the bento shows them all)
+	for (const name of ['Discovery', 'Movie SZN', 'Health dashboard', 'Coupon clipper', 'Giddey']) {
+		await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
+	}
 
-	// switch to Giddey
-	await tabs.filter({ hasText: 'Giddey' }).click();
-	await expect(page.getByRole('heading', { name: 'Giddey' })).toBeVisible();
-	await expect(page.getByRole('heading', { name: 'Discovery' })).toHaveCount(0);
+	// only the featured card exposes its links — Discovery is featured by default
+	await expect(page.getByRole('link', { name: /discovery\.simmerman\.tech/ })).toBeVisible();
+	await expect(page.getByRole('link', { name: /giddey\.simmerman\.tech/ })).toHaveCount(0);
+
+	// feature Giddey → its links appear, Discovery's go away
+	await page.getByRole('button', { name: 'Feature Giddey' }).click();
 	await expect(page.getByRole('link', { name: /giddey\.simmerman\.tech/ })).toBeVisible();
+	await expect(page.getByRole('link', { name: /discovery\.simmerman\.tech/ })).toHaveCount(0);
 });
 
 test('about section has posey gallery and resume-style work entries', async ({ page }) => {
