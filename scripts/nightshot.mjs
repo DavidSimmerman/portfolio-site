@@ -1,7 +1,9 @@
+import { mkdirSync } from 'node:fs';
 import { chromium, devices } from '@playwright/test';
 
 const out = process.argv[2] || '/tmp/shots';
 const base = 'http://localhost:5182/';
+mkdirSync(out, { recursive: true });
 const browser = await chromium.launch();
 
 async function shoot(name, ctxOpts) {

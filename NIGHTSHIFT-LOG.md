@@ -20,8 +20,13 @@ version first. No AI slop. Site = job-hunting front door.
 - [x] 5. OG/social meta + generated og image (canonical URL assumed
      `https://simmerman.tech` — from the email domain; fix the two `og:` URLs in
      +layout.svelte if the real domain differs)
-- [ ] Verify: e2e green, fresh screenshots desktop + mobile
-- [ ] `codex review --uncommitted` + address findings
+- [x] Verify: e2e 7/7 green (incl. new menu/aurora/contact tests); fresh section
+      screenshots desktop + mobile reviewed (`/tmp/shots/final`); `pnpm check` and
+      `pnpm lint` clean. Bonus fix found by the new e2e: lazy images had no intrinsic
+      dimensions → layout shift broke anchor scrolling from the menu; added width/height
+      everywhere (also fixes CLS).
+- [ ] `codex review --base main` + address findings (first attempt at xhigh effort was
+      OOM/timeout-killed; rerunning at medium effort in background)
 - [ ] Final commit + wake-up message
 
 ## Decisions
