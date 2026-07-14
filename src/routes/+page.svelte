@@ -30,6 +30,17 @@
 	];
 	let madPhoneIdx = $state(0);
 
+	// App Store reviews — crossfade through all of them (dots let you jump)
+	let madReviewIdx = $state(0);
+	$effect(() => {
+		if (madReviews.length <= 1) return;
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		const t = setInterval(() => {
+			madReviewIdx = (madReviewIdx + 1) % madReviews.length;
+		}, 6000);
+		return () => clearInterval(t);
+	});
+
 	onMount(() => {
 		fetch('https://mad.mindgoblin.tech/public/streak/dave')
 			.then((r) => (r.ok ? r.json() : null))
@@ -117,6 +128,10 @@
 	let fishEl: HTMLElement | undefined = $state();
 	let fishShown = $state(false);
 	let fishArmed = $state(false);
+	// click-to-play facade: show a poster until clicked, then load the YouTube
+	// player (autoplay). Keeps the heavy iframe off first paint and gives the
+	// card a real cursor + no transformed-iframe hover seam.
+	let fishPlay = $state(false);
 	$effect(() => {
 		if (!fishEl) return;
 		if (
@@ -495,25 +510,45 @@
 				</a>
 			</div>
 			{#if madReviews.length}
-				{@const r = madReviews[0]}
-				<figure
-					class="c-anim mt-8 max-w-md rounded-2xl border p-5"
-					class:shown={madShown}
-					style="--i: 6; border-color: var(--line-soft); background: var(--bg-elev)"
-				>
-					<div class="flex items-center gap-2">
-						<span class="text-[13px] tracking-[0.15em]" style="color: var(--accent)"
-							>{'★'.repeat(r.rating)}</span
-						>
-						<span class="text-[13px] font-semibold">{r.title}</span>
+				<div class="c-anim mt-8 max-w-md" class:shown={madShown} style="--i: 6">
+					<div class="review-stack">
+						{#each madReviews as r, i}
+							<figure
+								class="review-card rounded-2xl border p-5"
+								class:active={i === madReviewIdx}
+								aria-hidden={i !== madReviewIdx}
+								style="border-color: var(--line-soft); background: var(--bg-elev)"
+							>
+								<div class="flex items-center gap-2">
+									<span class="text-[13px] tracking-[0.15em]" style="color: var(--accent)"
+										>{'★'.repeat(r.rating)}</span
+									>
+									<span class="text-[13px] font-semibold">{r.title}</span>
+								</div>
+								<blockquote class="mt-2 text-[14.5px] leading-[1.55] text-[color:var(--text-2)]">
+									“{r.content}”
+								</blockquote>
+								<figcaption class="mt-2 text-[12.5px] text-[color:var(--text-4)]">
+									{r.author} · App Store review
+								</figcaption>
+							</figure>
+						{/each}
 					</div>
-					<blockquote class="mt-2 text-[14.5px] leading-[1.55] text-[color:var(--text-2)]">
-						“{r.content}”
-					</blockquote>
-					<figcaption class="mt-2 text-[12.5px] text-[color:var(--text-4)]">
-						{r.author} · App Store review
-					</figcaption>
-				</figure>
+					{#if madReviews.length > 1}
+						<div class="review-dots" role="group" aria-label="App Store reviews">
+							{#each madReviews as _, i}
+								<button
+									type="button"
+									class="review-dot"
+									class:on={i === madReviewIdx}
+									aria-current={i === madReviewIdx ? 'true' : undefined}
+									aria-label={`Show review ${i + 1} of ${madReviews.length}`}
+									onclick={() => (madReviewIdx = i)}
+								></button>
+							{/each}
+						</div>
+					{/if}
+				</div>
 			{/if}
 		</div>
 	</div>
@@ -573,15 +608,29 @@
 			</div>
 		</div>
 		<div class="order-1 grid gap-4 md:order-2">
-			<!-- YouTube embed — the player shows its own thumbnail + play button -->
+			<!-- click-to-play facade: poster until clicked, then the real player -->
 			<div class="bento-card c-fade aspect-video" class:shown={fishShown} style="--i: 0">
-				<iframe
-					class="h-full w-full"
-					src="https://www.youtube.com/embed/3paEeTIqVgU?rel=0"
-					title="Singing Fish demo"
-					allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-					allowfullscreen
-				></iframe>
+				{#if fishPlay}
+					<iframe
+						class="h-full w-full"
+						src="https://www.youtube.com/embed/3paEeTIqVgU?rel=0&autoplay=1"
+						title="Singing Fish demo"
+						allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen
+					></iframe>
+				{:else}
+					<button type="button" class="fish-facade" onclick={() => (fishPlay = true)}>
+						<img
+							src="/images/shot-fish.jpg"
+							alt="Play the Singing Fish demo — a Big Mouth Billy Bass on a wooden plaque"
+							width="1280"
+							height="720"
+							class="h-full w-full object-cover"
+							loading="lazy"
+						/>
+						<span class="fish-play" aria-hidden="true"></span>
+					</button>
+				{/if}
 			</div>
 			<div class="grid gap-4 sm:grid-cols-2">
 				<div class="bento-card c-fade flex flex-col" class:shown={fishShown} style="--i: 1">
@@ -708,9 +757,6 @@
 	>
 		Let's build something.
 	</h2>
-	<p class="reveal mt-5 max-w-md text-[16px] leading-[1.55] text-[color:var(--text-3)]">
-		Email is the fast lane — I actually answer it.
-	</p>
 	<a
 		href="mailto:david@simmerman.tech"
 		class="mega-mail reveal mt-7 self-start text-[clamp(1.5rem,4.2vw,3.4rem)] leading-[1.1]"
@@ -1012,6 +1058,61 @@
 		}
 	}
 
+	/* Singing fish — click-to-play facade over the poster frame */
+	.fish-facade {
+		position: absolute;
+		inset: 0;
+		display: block;
+		width: 100%;
+		height: 100%;
+		padding: 0;
+		border: 0;
+		background: none;
+		cursor: pointer;
+	}
+	.fish-facade img {
+		transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	.fish-facade:hover img {
+		transform: scale(1.03);
+	}
+	.fish-play {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		translate: -50% -50%;
+		width: 72px;
+		height: 72px;
+		border-radius: 50%;
+		border: 1px solid #ffffff30;
+		background: #0a0a0e8c;
+		backdrop-filter: blur(6px);
+		-webkit-backdrop-filter: blur(6px);
+		transition:
+			background 0.3s ease,
+			scale 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	.fish-play::after {
+		content: '';
+		position: absolute;
+		left: 54%;
+		top: 50%;
+		translate: -50% -50%;
+		border-style: solid;
+		border-width: 10px 0 10px 17px;
+		border-color: transparent transparent transparent #fff;
+	}
+	.fish-facade:hover .fish-play {
+		background: color-mix(in srgb, var(--accent) 85%, transparent);
+		scale: 1.06;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.fish-facade img,
+		.fish-play {
+			transition: none;
+		}
+	}
+
 	/* Mile A Day collage — phone shots cascade over the website shot */
 	.mad-collage {
 		position: relative;
@@ -1047,5 +1148,51 @@
 	}
 	.mad-collage:hover .mad-phone-cycle {
 		transform: scale(1.08);
+	}
+
+	/* App Store review crossfade — all cards share one grid cell, so the
+	   container sizes to the tallest and nothing jumps as they cycle */
+	.review-stack {
+		display: grid;
+	}
+	.review-stack > .review-card {
+		grid-area: 1 / 1;
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transition:
+			opacity 0.7s ease,
+			visibility 0.7s;
+	}
+	.review-card.active {
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+	}
+	.review-dots {
+		display: flex;
+		gap: 8px;
+		margin-top: 14px;
+	}
+	.review-dot {
+		width: 7px;
+		height: 7px;
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		background: var(--line);
+		cursor: pointer;
+		transition:
+			background 0.3s ease,
+			scale 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	.review-dot.on {
+		background: var(--accent);
+		scale: 1.15;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.review-stack > .review-card {
+			transition: none;
+		}
 	}
 </style>

@@ -24,6 +24,10 @@ html {
 	font-family: 'Switzer', ui-sans-serif, system-ui, sans-serif;
 	scroll-behavior: smooth;
 	color-scheme: dark;
+	/* decorative bleed elements (aurora blobs, docked work panels) can poke a few
+	   px past the viewport at narrow widths — clip kills the sideways overscroll
+	   without creating a scroll container (so sticky nav + scroll timelines stay). */
+	overflow-x: clip;
 }
 
 ::selection {

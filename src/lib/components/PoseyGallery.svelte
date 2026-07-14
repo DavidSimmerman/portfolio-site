@@ -1,16 +1,16 @@
 <script lang="ts">
 	const photos = [
-		{ src: '/images/posey-sunglasses.png', caption: 'Chief morale officer.', w: 1536, h: 2048 },
-		{ src: '/images/posey-puppy.jpeg', caption: 'Day one.', w: 3024, h: 4032 },
-		{ src: '/images/posey-mountain.png', caption: 'Summit crew, Appalachians.', w: 1536, h: 2048 },
-		{ src: '/images/posey-snow.png', caption: 'First snow. Unbothered.', w: 1536, h: 2048 },
-		{ src: '/images/posey-recliner.png', caption: "That's her chair now.", w: 1536, h: 2048 },
-		{ src: '/images/posey-couch.png', caption: 'Fetch training going great.', w: 1536, h: 2048 },
+		{ src: '/images/posey-sunglasses.webp', caption: 'Chief morale officer.', w: 900, h: 1200 },
+		{ src: '/images/posey-puppy.webp', caption: 'Day one.', w: 900, h: 1200 },
+		{ src: '/images/posey-mountain.webp', caption: 'Summit crew, Appalachians.', w: 900, h: 1200 },
+		{ src: '/images/posey-snow.webp', caption: 'First snow. Unbothered.', w: 900, h: 1200 },
+		{ src: '/images/posey-recliner.webp', caption: "That's her chair now.", w: 900, h: 1200 },
+		{ src: '/images/posey-couch.webp', caption: 'Fetch training going great.', w: 900, h: 1200 },
 		{
-			src: '/images/posey-sit.png',
+			src: '/images/posey-sit.webp',
 			caption: 'Waiting for the OK to eat the floor steak.',
-			w: 1536,
-			h: 2048
+			w: 900,
+			h: 1200
 		}
 	];
 

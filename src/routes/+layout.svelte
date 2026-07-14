@@ -17,12 +17,20 @@
 	let menuOpen = $state(false);
 	let active = $state('');
 
-	// highlight the section currently in the middle band of the viewport
+	// highlight the section currently in the middle band of the viewport.
+	// track the full set of in-band sections so scrolling back to the (unobserved)
+	// hero clears the indicator instead of leaving it stuck on the last section.
+	const sectionIds = navLinks.map((l) => l.href.slice(2));
 	onMount(() => {
 		if (typeof IntersectionObserver === 'undefined') return;
+		const inBand = new Set<string>();
 		const io = new IntersectionObserver(
 			(entries) => {
-				for (const e of entries) if (e.isIntersecting) active = e.target.id;
+				for (const e of entries) {
+					if (e.isIntersecting) inBand.add(e.target.id);
+					else inBand.delete(e.target.id);
+				}
+				active = sectionIds.find((id) => inBand.has(id)) ?? '';
 			},
 			{ rootMargin: '-40% 0px -55% 0px' }
 		);
@@ -52,14 +60,14 @@
 	<title>David Simmerman — Software Engineer</title>
 	<meta
 		name="description"
-		content="Software engineer in Tampa, FL. AI platforms, basketball analytics, and one animatronic fish."
+		content="Software engineer. AI platforms, basketball analytics, and one animatronic fish."
 	/>
 	<!-- link previews (Slack/iMessage/LinkedIn) -->
 	<meta property="og:type" content="website" />
 	<meta property="og:title" content="David Simmerman — Software Engineer" />
 	<meta
 		property="og:description"
-		content="Software engineer in Tampa, FL. AI platforms, basketball analytics, and one animatronic fish."
+		content="Software engineer. AI platforms, basketball analytics, and one animatronic fish."
 	/>
 	<meta property="og:url" content="https://simmerman.tech" />
 	<meta property="og:image" content="https://simmerman.tech/images/og.png" />
@@ -117,12 +125,6 @@
 {/if}
 
 {@render children()}
-
-<footer class="px-8 pb-10 md:px-16">
-	<p class="text-[12px] text-[color:var(--text-4)]">
-		Tampa, FL. Programming since the Minecraft server, 2012. © {new Date().getFullYear()} David Simmerman.
-	</p>
-</footer>
 
 <style>
 	.nav-link {
