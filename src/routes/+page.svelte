@@ -128,10 +128,6 @@
 	let fishEl: HTMLElement | undefined = $state();
 	let fishShown = $state(false);
 	let fishArmed = $state(false);
-	// click-to-play facade: show a poster until clicked, then load the YouTube
-	// player (autoplay). Keeps the heavy iframe off first paint and gives the
-	// card a real cursor + no transformed-iframe hover seam.
-	let fishPlay = $state(false);
 	$effect(() => {
 		if (!fishEl) return;
 		if (
@@ -195,7 +191,7 @@
 <!-- ============================================================
      BAND 1 — BLACK: hero
 ============================================================ -->
-<section class="relative flex min-h-svh flex-col justify-center px-8 py-20 md:px-16">
+<section id="hero" class="relative flex min-h-svh flex-col justify-center px-8 py-20 md:px-16">
 	<div class="aurora" aria-hidden="true" bind:this={auroraEl}>
 		<span class="blob b1"></span>
 		<span class="blob b2"></span>
@@ -534,20 +530,6 @@
 							</figure>
 						{/each}
 					</div>
-					{#if madReviews.length > 1}
-						<div class="review-dots" role="group" aria-label="App Store reviews">
-							{#each madReviews as _, i}
-								<button
-									type="button"
-									class="review-dot"
-									class:on={i === madReviewIdx}
-									aria-current={i === madReviewIdx ? 'true' : undefined}
-									aria-label={`Show review ${i + 1} of ${madReviews.length}`}
-									onclick={() => (madReviewIdx = i)}
-								></button>
-							{/each}
-						</div>
-					{/if}
 				</div>
 			{/if}
 		</div>
@@ -608,29 +590,15 @@
 			</div>
 		</div>
 		<div class="order-1 grid gap-4 md:order-2">
-			<!-- click-to-play facade: poster until clicked, then the real player -->
-			<div class="bento-card c-fade aspect-video" class:shown={fishShown} style="--i: 0">
-				{#if fishPlay}
-					<iframe
-						class="h-full w-full"
-						src="https://www.youtube.com/embed/3paEeTIqVgU?rel=0&autoplay=1"
-						title="Singing Fish demo"
-						allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-						allowfullscreen
-					></iframe>
-				{:else}
-					<button type="button" class="fish-facade" onclick={() => (fishPlay = true)}>
-						<img
-							src="/images/shot-fish.jpg"
-							alt="Play the Singing Fish demo — a Big Mouth Billy Bass on a wooden plaque"
-							width="1280"
-							height="720"
-							class="h-full w-full object-cover"
-							loading="lazy"
-						/>
-						<span class="fish-play" aria-hidden="true"></span>
-					</button>
-				{/if}
+			<!-- YouTube embed — the player shows its own thumbnail + play button -->
+			<div class="bento-card fish-video c-fade aspect-video" class:shown={fishShown} style="--i: 0">
+				<iframe
+					class="h-full w-full"
+					src="https://www.youtube.com/embed/3paEeTIqVgU?rel=0"
+					title="Singing Fish demo"
+					allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+					allowfullscreen
+				></iframe>
 			</div>
 			<div class="grid gap-4 sm:grid-cols-2">
 				<div class="bento-card c-fade flex flex-col" class:shown={fishShown} style="--i: 1">
@@ -1058,59 +1026,13 @@
 		}
 	}
 
-	/* Singing fish — click-to-play facade over the poster frame */
-	.fish-facade {
-		position: absolute;
-		inset: 0;
-		display: block;
-		width: 100%;
-		height: 100%;
-		padding: 0;
-		border: 0;
-		background: none;
+	/* Singing fish video — signal it's clickable. Skip the card's hover scale:
+	   re-rasterizing the scaled iframe leaves a faint tile seam across its middle. */
+	.fish-video {
 		cursor: pointer;
 	}
-	.fish-facade img {
-		transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-	}
-	.fish-facade:hover img {
-		transform: scale(1.03);
-	}
-	.fish-play {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		translate: -50% -50%;
-		width: 72px;
-		height: 72px;
-		border-radius: 50%;
-		border: 1px solid #ffffff30;
-		background: #0a0a0e8c;
-		backdrop-filter: blur(6px);
-		-webkit-backdrop-filter: blur(6px);
-		transition:
-			background 0.3s ease,
-			scale 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-	}
-	.fish-play::after {
-		content: '';
-		position: absolute;
-		left: 54%;
-		top: 50%;
-		translate: -50% -50%;
-		border-style: solid;
-		border-width: 10px 0 10px 17px;
-		border-color: transparent transparent transparent #fff;
-	}
-	.fish-facade:hover .fish-play {
-		background: color-mix(in srgb, var(--accent) 85%, transparent);
-		scale: 1.06;
-	}
-	@media (prefers-reduced-motion: reduce) {
-		.fish-facade img,
-		.fish-play {
-			transition: none;
-		}
+	.fish-video:hover {
+		transform: none;
 	}
 
 	/* Mile A Day collage — phone shots cascade over the website shot */
@@ -1168,27 +1090,6 @@
 		opacity: 1;
 		visibility: visible;
 		pointer-events: auto;
-	}
-	.review-dots {
-		display: flex;
-		gap: 8px;
-		margin-top: 14px;
-	}
-	.review-dot {
-		width: 7px;
-		height: 7px;
-		padding: 0;
-		border: 0;
-		border-radius: 50%;
-		background: var(--line);
-		cursor: pointer;
-		transition:
-			background 0.3s ease,
-			scale 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-	}
-	.review-dot.on {
-		background: var(--accent);
-		scale: 1.15;
 	}
 	@media (prefers-reduced-motion: reduce) {
 		.review-stack > .review-card {

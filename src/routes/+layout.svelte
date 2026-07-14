@@ -17,25 +17,21 @@
 	let menuOpen = $state(false);
 	let active = $state('');
 
-	// highlight the section currently in the middle band of the viewport.
-	// track the full set of in-band sections so scrolling back to the (unobserved)
-	// hero clears the indicator instead of leaving it stuck on the last section.
-	const sectionIds = navLinks.map((l) => l.href.slice(2));
+	// highlight the section currently in the middle band of the viewport. The dot
+	// sticks to the last section entered (no flicker between sections); the hero is
+	// observed too so scrolling back to the top clears it instead of it stuck on Work.
 	onMount(() => {
 		if (typeof IntersectionObserver === 'undefined') return;
-		const inBand = new Set<string>();
 		const io = new IntersectionObserver(
 			(entries) => {
 				for (const e of entries) {
-					if (e.isIntersecting) inBand.add(e.target.id);
-					else inBand.delete(e.target.id);
+					if (e.isIntersecting) active = e.target.id === 'hero' ? '' : e.target.id;
 				}
-				active = sectionIds.find((id) => inBand.has(id)) ?? '';
 			},
 			{ rootMargin: '-40% 0px -55% 0px' }
 		);
-		for (const l of navLinks) {
-			const el = document.getElementById(l.href.slice(2));
+		for (const id of [...navLinks.map((l) => l.href.slice(2)), 'hero']) {
+			const el = document.getElementById(id);
 			if (el) io.observe(el);
 		}
 		return () => io.disconnect();
