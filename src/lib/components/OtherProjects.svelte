@@ -56,8 +56,6 @@
 			shot: { src: '/images/op-giddey.png', w: 409, h: 885 }
 		}
 	];
-	const num = (i: number) => String(i + 1).padStart(2, '0');
-
 	// click-to-open accordion — one row open at a time (starts all closed)
 	let open = $state<number | null>(null);
 	const toggle = (i: number) => (open = open === i ? null : i);
@@ -74,10 +72,9 @@
 				aria-controls="op-p-{i}"
 				onclick={() => toggle(i)}
 			>
-				<span class="ix-num">{num(i)}</span>
+				<span class="ix-chev" aria-hidden="true"></span>
 				<span class="ix-name">{p.name}</span>
 				<span class="ix-meta">{p.platform} · {p.year}</span>
-				<span class="ix-chev" aria-hidden="true"></span>
 			</button>
 			<div
 				class="ix-panel"
@@ -127,9 +124,9 @@
 	.ix-row {
 		width: 100%;
 		display: grid;
-		grid-template-columns: 2.6rem 1fr auto 1.5rem;
+		grid-template-columns: 1rem 1fr auto;
 		align-items: baseline;
-		gap: 1.4rem;
+		gap: 1.5rem;
 		padding: 1.35rem 0.4rem;
 		background: none;
 		border: 0;
@@ -141,15 +138,6 @@
 	}
 	.ix-row:hover {
 		padding-left: 1rem;
-	}
-	.ix-num {
-		font-size: 0.8rem;
-		color: var(--text-4);
-		font-variant-numeric: tabular-nums;
-		transition: color 0.25s;
-	}
-	.ix-item.open .ix-num {
-		color: var(--accent);
 	}
 	.ix-name {
 		font-size: clamp(1.2rem, 2.2vw, 1.7rem);
@@ -164,20 +152,20 @@
 		letter-spacing: 0.06em;
 		white-space: nowrap;
 	}
+	/* left disclosure arrow: points right when closed, down when open */
 	.ix-chev {
 		align-self: center;
-		justify-self: end;
-		width: 0.62rem;
-		height: 0.62rem;
+		width: 0.58rem;
+		height: 0.58rem;
 		border-right: 1.5px solid var(--text-3);
 		border-bottom: 1.5px solid var(--text-3);
-		transform: rotate(45deg);
+		transform: rotate(-45deg);
 		transition:
 			transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
 			border-color 0.25s;
 	}
 	.ix-item.open .ix-chev {
-		transform: rotate(-135deg);
+		transform: rotate(45deg);
 		border-color: var(--accent);
 	}
 
@@ -198,7 +186,7 @@
 		gap: 1.75rem;
 	}
 	.ix-item.open .ix-panel-inner {
-		padding: 0.2rem 0.4rem 1.9rem 4rem;
+		padding: 0.2rem 0.4rem 1.9rem 2.9rem;
 	}
 	.ix-shot {
 		flex: 0 0 22rem;
