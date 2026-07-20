@@ -85,7 +85,7 @@
 
 <!-- pin wrap: panel sticks while scroll scrubs through what got built -->
 <div bind:this={wrapEl} class="wrap">
-	<div class="sticky top-0 flex h-screen items-center">
+	<div class="pin sticky top-0 flex h-svh items-center">
 		<!-- ghost W pins along with the panel -->
 		<svg class="ghost" viewBox="0 0 100 110" fill="none" aria-hidden="true">
 			<path
@@ -96,8 +96,8 @@
 			/>
 		</svg>
 
-		<div class="panel dock-right relative w-full p-8 md:p-12">
-			<div class="grid gap-10 md:grid-cols-[1.1fr_1.6fr]">
+		<div class="panel dock-right relative w-full p-6 md:p-12">
+			<div class="grid gap-5 md:grid-cols-[1.1fr_1.6fr] md:gap-10">
 				<!-- left: company + section rail -->
 				<div>
 					<h3
@@ -115,6 +115,22 @@
 						<span class="ml-auto text-[12px] whitespace-nowrap text-[color:var(--text-4)]">
 							Mar 2026 – present
 						</span>
+					</div>
+					<!-- mobile: the rail collapses to tappable dots + the same progress line -->
+					<div class="dots mt-3 md:hidden">
+						{#each sections as s, i}
+							<button
+								class="dot-btn"
+								class:active={i === active}
+								class:passed={i < active}
+								aria-label="{s.title} ({i + 1} of {sections.length})"
+								aria-current={i === active}
+								onclick={() => jumpTo(i)}
+							>
+								<span class="dot"></span>
+							</button>
+						{/each}
+						<div class="dots-line" style="--p: {progress}" aria-hidden="true"></div>
 					</div>
 					<div class="rail mt-8">
 						{#each sections as s, i}
@@ -145,39 +161,43 @@
 
 				<!-- right: active section slide (fixed height — no layout shift) -->
 				<div>
+					<!-- all slides share one grid cell — the tallest sets the height, so
+					     nothing overlaps and there's no layout shift between sections -->
 					<div class="slide relative">
-						{#key active}
-							<div class="swap-in">
+						{#each sections as s, i}
+							<div class="slide-card" class:active={i === active}>
 								<div class="flex items-baseline justify-between gap-4">
-									<h4 class="text-[clamp(1.3rem,2.4vw,1.8rem)] font-semibold tracking-[-0.02em]">
-										{sections[active].title}
+									<h4 class="text-[clamp(1.2rem,2.4vw,1.8rem)] font-semibold tracking-[-0.02em]">
+										{s.title}
 									</h4>
 									<span class="text-[12px] whitespace-nowrap text-[color:var(--text-4)]">
-										{active + 1} / {sections.length}
+										{i + 1} / {sections.length}
 									</span>
 								</div>
-								<p class="mt-2 text-[15px] text-[color:var(--text-3)]">{sections[active].blurb}</p>
-								<div class="mt-6 flex flex-col gap-3">
-									{#each sections[active].points as p, i}
-										<div class="point" style="--d: {i * 70}ms">{p}</div>
+								<p class="mt-2 text-[15px] text-[color:var(--text-3)]">{s.blurb}</p>
+								<div class="mt-4 flex flex-col gap-2.5 md:mt-6 md:gap-3">
+									{#each s.points as p, j}
+										<div class="point" style="--d: {j * 70}ms">{p}</div>
 									{/each}
 								</div>
-								<div class="stat mt-6">
-									<span class="stat-v">{sections[active].stat.v}</span>
-									<span class="stat-l">{sections[active].stat.l}</span>
+								<div class="stat mt-4 md:mt-6">
+									<span class="stat-v">{s.stat.v}</span>
+									<span class="stat-l">{s.stat.l}</span>
 								</div>
 							</div>
-						{/key}
+						{/each}
 					</div>
-					<div class="mt-6 border-t pt-5" style="border-color: var(--line-soft)">
+					<div class="mt-4 border-t pt-4 md:mt-6 md:pt-5" style="border-color: var(--line-soft)">
 						<div
 							class="text-[11px] font-medium tracking-[0.12em] uppercase text-[color:var(--text-4)]"
 						>
 							Some of the programs on it
 						</div>
-						<div class="mt-4 flex flex-wrap items-center gap-x-7 gap-y-3">
+						<div
+							class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2.5 md:mt-4 md:gap-x-7 md:gap-y-3"
+						>
 							{#each programs as p}
-								<img src={p.src} alt={p.alt} class="logo h-9 w-auto" loading="lazy" />
+								<img src={p.src} alt={p.alt} class="logo h-8 w-auto md:h-9" loading="lazy" />
 							{/each}
 						</div>
 					</div>
@@ -268,11 +288,13 @@
 			box-shadow 0.3s;
 		z-index: 1;
 	}
-	.rail-row.active .dot {
+	.rail-row.active .dot,
+	.dot-btn.active .dot {
 		background: var(--accent);
 		box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent);
 	}
-	.rail-row.passed .dot {
+	.rail-row.passed .dot,
+	.dot-btn.passed .dot {
 		background: color-mix(in srgb, var(--accent) 55%, var(--line));
 	}
 	.rail-title {
@@ -310,26 +332,25 @@
 
 	/* ---- slide ---- */
 	.slide {
-		/* tallest slide sets this — locked so the panel never changes height */
-		height: 380px;
+		/* all cards stacked in one grid cell — tallest sets the height */
+		display: grid;
 	}
-	@media (max-width: 767px) {
-		.slide {
-			height: 420px;
-		}
+	.slide-card {
+		grid-area: 1 / 1;
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(14px);
+		pointer-events: none;
+		transition:
+			opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+			transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+			visibility 0.45s;
 	}
-	.swap-in {
-		animation: swap 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
-	}
-	@keyframes swap {
-		from {
-			opacity: 0;
-			transform: translateY(14px);
-		}
-		to {
-			opacity: 1;
-			transform: none;
-		}
+	.slide-card.active {
+		opacity: 1;
+		visibility: visible;
+		transform: none;
+		pointer-events: auto;
 	}
 	.point {
 		display: flex;
@@ -341,8 +362,99 @@
 		font-size: 14px;
 		line-height: 1.45;
 		color: var(--text-2);
-		animation: swap 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-		animation-delay: var(--d, 0ms);
+		opacity: 0;
+		transform: translateY(14px);
+		transition:
+			opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+			transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	.slide-card.active .point {
+		opacity: 1;
+		transform: none;
+		transition-delay: var(--d, 0ms);
+	}
+
+	/* ---- mobile dots (the rail, collapsed) ---- */
+	.dots {
+		position: relative;
+		display: flex;
+		max-width: 15rem;
+	}
+	@media (min-width: 768px) {
+		.dots {
+			/* component display:flex would beat the md:hidden utility */
+			display: none;
+		}
+	}
+	.dot-btn {
+		position: relative;
+		z-index: 1;
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 44px; /* touch target */
+		padding: 0;
+		background: none;
+		border: none;
+		cursor: pointer;
+	}
+	.dots-line {
+		/* ponytail: 4 dots → first/last centers at 12.5% / 87.5%; recompute if count changes */
+		position: absolute;
+		left: 12.5%;
+		right: 12.5%;
+		top: 50%;
+		height: 1.5px;
+		margin-top: -0.75px;
+		background: var(--line);
+	}
+	.dots-line::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		transform-origin: left;
+		transform: scaleX(var(--p, 0));
+		background: var(--accent);
+	}
+
+	@media (max-width: 767px) {
+		/* fit the pinned panel inside a phone viewport: rail → dots, tighter panel,
+		   pin content clears the sticky nav */
+		.rail {
+			display: none;
+		}
+		.pin {
+			padding-top: 3rem;
+		}
+		.panel {
+			margin-left: 1rem;
+			padding: 1.2rem 1.3rem;
+		}
+		.point {
+			min-height: 0;
+			padding: 9px 12px;
+		}
+		.stat-v {
+			font-size: 26px;
+		}
+	}
+	/* short viewports (small/landscape phones): the panel can be taller than the
+	   screen — let the pin scroll internally so nothing is unreachable. view()
+	   entrance is off here: the pin becomes the scroll root and hijacks its timeline. */
+	@media (max-width: 767px) and (max-height: 750px), (max-height: 620px) {
+		.pin {
+			align-items: safe center;
+			overflow: hidden auto;
+		}
+		.panel {
+			animation: none;
+		}
+	}
+	@media (max-height: 620px) {
+		.panel {
+			padding: 1.25rem 1.5rem;
+		}
 	}
 
 	.stat {
@@ -375,10 +487,12 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.panel,
-		.swap-in,
-		.point {
+		.panel {
 			animation: none;
+		}
+		.slide-card,
+		.point {
+			transition: none;
 		}
 		.draw {
 			/* beats the inline scroll-driven offset */

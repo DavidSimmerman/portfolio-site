@@ -115,6 +115,55 @@ test('mobile menu opens, navigates, and closes', async ({ page }) => {
 	await expect(page.locator('#contact')).toBeInViewport();
 });
 
+test('work section mobile: pinned scrub, dots indicator, no overlap', async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto('/');
+
+	const wrap = page.locator('#work .wrap').first();
+	await wrap.scrollIntoViewIfNeeded();
+
+	// rail collapses to the dots indicator on mobile
+	await expect(wrap.locator('.dots')).toBeVisible();
+	await expect(wrap.locator('.rail')).toBeHidden();
+
+	const scrollToProgress = (frac: number) =>
+		page.evaluate((f) => {
+			const w = document.querySelector('#work .wrap') as HTMLElement;
+			const total = w.offsetHeight - window.innerHeight;
+			window.scrollTo(0, w.offsetTop + f * total + 10);
+		}, frac);
+
+	// scrubbing the pin advances the slides and the dots
+	await scrollToProgress(0);
+	await expect(wrap.locator('.slide-card').first()).toHaveClass(/active/);
+	await scrollToProgress(0.9);
+	await expect(wrap.locator('.slide-card').nth(3)).toHaveClass(/active/);
+	await expect(wrap.locator('.dot-btn').nth(3)).toHaveClass(/active/);
+
+	// tapping a dot jumps back to that slide
+	await wrap.locator('.dot-btn').first().click();
+	await expect(wrap.locator('.slide-card').first()).toHaveClass(/active/);
+
+	// the slide stack never overlaps the brands footer, and nothing overflows sideways
+	const overlap = await wrap.evaluate((w) => {
+		const slide = w.querySelector('.slide')!.getBoundingClientRect();
+		const footer = w.querySelector('.border-t')!.getBoundingClientRect();
+		return slide.bottom > footer.top + 1;
+	});
+	expect(overlap).toBe(false);
+	expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBe(
+		0
+	);
+});
+
+test('work section desktop keeps the role rail', async ({ page }) => {
+	await page.goto('/');
+	const wrap = page.locator('#work .wrap').first();
+	await wrap.scrollIntoViewIfNeeded();
+	await expect(wrap.locator('.rail')).toBeVisible();
+	await expect(wrap.locator('.dots')).toBeHidden();
+});
+
 test('hero aurora and contact email CTA render', async ({ page }) => {
 	await page.goto('/');
 
