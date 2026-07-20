@@ -1,67 +1,50 @@
-# Nightshift log — 2026-07-10
+# Nightshift log — 2026-07-20
 
-**Task:** Review portfolio site, make it flashier/better for desktop + mobile. Commit current
-version first. No AI slop. Site = job-hunting front door.
+**Task:** Draft David's resume. Build a `/resume` page on the portfolio site where it can be
+viewed, with a "Download PDF" button.
 
 ## Status
 
-- [x] Commit current uncommitted work on `main` (preserve everything) — `de5e4d9`
-- [x] Branch `feat/nightshift-flashy`
-- [x] Baseline screenshots (desktop + mobile) — `/tmp/shots/base`, script `scripts/nightshot.mjs`
-- [x] Review pass. Findings: hero is flat (plain black + text); mobile nav has NO section
-      links; contact closer is thin; no OG/social meta (recruiters share links); copy is
-      good/human already; Switzer loads fine via Fontshare; work/skills/projects sections
-      already strong.
-- [x] 1. Hero signature — aurora glow field (Apple systemBlue/Indigo/Cyan), pointer
-     parallax, scroll cue; faint reprise in contact closer (bookends) — `c7096d1`
-- [x] 2. Nav — active-section highlight, scroll-progress hairline, mobile overlay menu
-- [x] 3. Contact finale — full-height closer, giant email CTA w/ gradient underline
-- [x] 4. Micro-polish — sliding underline CTAs, focus-visible rings, bento hover border
-- [x] 5. OG/social meta + generated og image (canonical URL assumed
-     `https://simmerman.tech` — from the email domain; fix the two `og:` URLs in
-     +layout.svelte if the real domain differs)
-- [x] Verify: e2e 7/7 green (incl. new menu/aurora/contact tests); fresh section
-      screenshots desktop + mobile reviewed (`/tmp/shots/final`); `pnpm check` and
-      `pnpm lint` clean. Bonus fix found by the new e2e: lazy images had no intrinsic
-      dimensions → layout shift broke anchor scrolling from the menu; added width/height
-      everywhere (also fixes CLS).
-- [x] `codex review --base main` — verdict: "main site changes appear sound." One P3
-      (screenshot helper swallowed ENOENT) — fixed in `5328f71`. It also implicitly
-      caught that new code wasn't prettier-formatted — fixed in `575eb70`.
-      (First attempt at xhigh effort was OOM/timeout-killed; medium effort completed.)
-- [x] Final e2e re-run after all fixes: 7/7 green.
-- [x] Final commit + wake-up message
-
-## Done — summary of what changed
-
-1. **Hero** — ambient aurora glow (Apple systemBlue/Indigo/Cyan radial blobs, slow drift),
-   pointer parallax on fine pointers, pulsing scroll cue that fades on scroll.
-2. **Nav** — active-section accent dot (IntersectionObserver), scroll-progress hairline
-   (pure CSS scroll timeline), real mobile menu: burger → frosted overlay w/ staggered links.
-3. **Contact** — full-height finale, giant email CTA with gradient underline sweep, aurora
-   reprise bookending the page.
-4. **Micro-polish** — CTA underlines slide in, keyboard focus rings, bento hover border.
-5. **Link previews** — OG/Twitter meta + generated 1200×630 og.png.
-6. **Fixes found along the way** — mobile menu anchor nav was swallowed by the scroll lock
-   (sync unlock); lazy images had no intrinsic size → layout shift broke anchor jumps and
-   hurt CLS (added width/height everywhere).
-
-All motion respects prefers-reduced-motion; scroll-driven bits degrade gracefully off Chromium.
+- [x] Log skeleton written (this file)
+- [x] Recon: resume facts extracted from site content via Explore subagent (work history,
+      skills, projects, education, contact — sourced from +page.svelte, verbatim)
+- [x] Branch `feat/resume` (working tree has unrelated uncommitted edits — PoseyGallery,
+      +page.svelte, layout.css, HobbyIcon — from another session; my file set is disjoint,
+      so branched in place and commit ONLY my files. Did not touch those.)
+- [x] Build `/resume` route: white paper sheet on dark canvas, Download PDF button,
+      print CSS strips chrome so PDF = the sheet
+- [x] Generate `static/resume.pdf` via Playwright print-to-PDF script — verified 1 page,
+      Letter, tuned spacing to fit (sheet height ≤ 1056px at 816px width)
+- [x] Point nav Resume links at `/resume` (+layout.svelte only — it was clean)
+- [x] e2e: new `e2e/resume.e2e.ts` (3 tests: page renders, download event fires with
+      `David-Simmerman-Resume.pdf`, `/resume.pdf` serves `%PDF-`, nav href) — all pass.
+      `pnpm check` 0 errors. Screenshots at `/tmp/shots/resume/` (desktop, mobile, pdf-1).
+      ⚠️ PRE-EXISTING failures (NOT from tonight): `home.e2e.ts` aurora + bento tests were
+      already stale — commits 122733c/1be2a85 removed those features but never updated the
+      tests. That area has in-flight uncommitted edits from another session, so I left the
+      tests alone rather than collide. 10 passed / 2 pre-existing failures.
+- [ ] `codex review` on my diff + address findings
+- [ ] Commit(s) on `feat/resume`, close out log, wake-up message
 
 ## Decisions
 
-- Skipping the mockup-choice gate: human is asleep, nobody to pick a variant. Iterating
-  directly on a branch with screenshot evidence instead. (nightshift autonomy > mockup flow)
-- Using a plain branch, not a worktree: after committing current state the tree is clean and
-  no parallel work competes for it.
+- **PDF strategy:** pre-generated static `resume.pdf` via headless Chromium print of the
+  `/resume` route (`scripts/build-resume-pdf.mjs`). No runtime PDF lib. Button is
+  `<a href="/resume.pdf" download>`. Re-run the script after content edits.
+- **Resume content:** drafted solely from facts already published on the site (About/Work/
+  Skills/Projects sections). Education listed as "Michigan State University — Computer
+  Science coursework" (no medical detail — standard resume convention).
+- **Dirty tree:** unrelated uncommitted changes exist on `feat/nightshift-flashy`. Left
+  untouched; my changes avoid those files (incl. leaving the `/resume.pdf` CTA inside
+  +page.svelte as-is — it stays valid since the PDF now exists).
 
 ## How to run / verify
 
-- Dev: `pnpm dev` (bind 0.0.0.0; `expose portfolio <port>` if needed)
-- Tests: `pnpm test:e2e`
-- Repo: `~/dev/portfolio-site`, branch `feat/nightshift-flashy` (main holds pre-nightshift state)
+- Dev: `pnpm dev` in `~/dev/portfolio-site`
+- e2e: `pnpm test` (builds + previews on :4173 automatically)
+- Regenerate PDF: `pnpm build && pnpm preview` then `node scripts/build-resume-pdf.mjs`
 
-## Resume pointer
+## Resume pointer (if resuming confused)
 
-If context was lost: read this file + `git log main..HEAD`, continue from the first unchecked
-box above.
+Read this file + `src/routes/resume/+page.svelte`. Task = resume page + PDF download.
+Continue from first unchecked box above.

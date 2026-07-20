@@ -93,7 +93,7 @@
 				{l.label}
 			</a>
 		{/each}
-		<a href="/resume.pdf" class="cta hidden font-semibold md:inline">Resume</a>
+		<a href="/resume" class="cta hidden font-semibold md:inline">Resume</a>
 		<button
 			class="burger -mr-2 md:hidden"
 			aria-expanded={menuOpen}
@@ -112,7 +112,7 @@
 		class="m-overlay fixed inset-0 z-30 flex flex-col justify-center px-8 md:hidden"
 		transition:fade={{ duration: 180 }}
 	>
-		{#each [...navLinks, { label: 'Resume', href: '/resume.pdf' }] as l, i}
+		{#each [...navLinks, { label: 'Resume', href: '/resume' }] as l, i}
 			<a href={l.href} class="m-link" style="--i: {i}" onclick={closeMenu}>
 				{l.label}
 			</a>
