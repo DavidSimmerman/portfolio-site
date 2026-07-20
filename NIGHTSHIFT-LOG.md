@@ -23,8 +23,26 @@ viewed, with a "Download PDF" button.
       already stale — commits 122733c/1be2a85 removed those features but never updated the
       tests. That area has in-flight uncommitted edits from another session, so I left the
       tests alone rather than collide. 10 passed / 2 pre-existing failures.
-- [ ] `codex review` on my diff + address findings
-- [ ] Commit(s) on `feat/resume`, close out log, wake-up message
+- [x] `codex review --base HEAD~1` (run in a clean detached worktree so the other
+      session's dirty files stayed out of the diff) — verdict: "no clear functional
+      regressions", zero findings. Bonus: it verified the PDF's link annotations
+      (mailto / simmerman.tech / GitHub / LinkedIn) are real clickable links.
+- [x] Committed on `feat/resume` — `7aca5a3`. Not pushed (task didn't ask).
+
+## Done — what shipped
+
+- **`/resume`** — the drafted resume rendered as a white Letter-size sheet on the site's
+  dark canvas, with a `← simmerman.tech` back link and an accent **Download PDF** button.
+- **`static/resume.pdf`** — real 1-page Letter PDF, generated from that same route via
+  `scripts/build-resume-pdf.mjs` (headless Chromium print). Downloads as
+  `David-Simmerman-Resume.pdf`. Links inside the PDF are clickable.
+- **Nav fixed** — desktop + mobile "Resume" links pointed at `/resume` (they previously
+  pointed at `/resume.pdf`, which didn't exist = 404). The old `/resume.pdf` CTA inside
+  +page.svelte still works too, since the PDF now exists.
+- **Content** — drafted only from facts already published on the site: Zoovu/XGen arc
+  (4 roles, Nov 2020 → present), Wisely Optimize, top 3 projects, skills, MSU education
+  line (left the medical detail off — standard convention). Worth a morning read-through:
+  `src/routes/resume/+page.svelte` — edit there, re-run the script, commit both.
 
 ## Decisions
 
