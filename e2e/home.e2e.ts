@@ -35,22 +35,25 @@ test('home page renders hero, sections, and working links', async ({ page }) => 
 		.toBeGreaterThan(0);
 });
 
-test('other-projects bento features one project and switches on click', async ({ page }) => {
+test('other-projects accordion lists every project and expands on click', async ({ page }) => {
 	await page.goto('/');
 
-	// every project is always present as a card heading (the bento shows them all)
-	for (const name of ['Discovery', 'Movie SZN', 'Health dashboard', 'Coupon clipper', 'Giddey']) {
-		await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
-	}
+	// every project appears as an accordion row, all collapsed initially
+	const rows = page.locator('.ix-row');
+	expect(await rows.count()).toBeGreaterThanOrEqual(5);
+	await expect(page.locator('.ix-item.open')).toHaveCount(0);
 
-	// only the featured card exposes its links — Discovery is featured by default
-	await expect(page.getByRole('link', { name: /discovery\.simmerman\.tech/ })).toBeVisible();
-	await expect(page.getByRole('link', { name: /giddey\.simmerman\.tech/ })).toHaveCount(0);
+	// open Discovery → its panel (desc + GitHub link) becomes reachable
+	const discovery = rows.filter({ hasText: 'Discovery' }).first();
+	await discovery.click();
+	await expect(discovery).toHaveAttribute('aria-expanded', 'true');
+	const openPanel = page.locator('.ix-item.open .ix-panel');
+	await expect(openPanel.getByRole('link', { name: 'GitHub' })).toBeVisible();
 
-	// feature Giddey → its links appear, Discovery's go away
-	await page.getByRole('button', { name: 'Feature Giddey' }).click();
-	await expect(page.getByRole('link', { name: /giddey\.simmerman\.tech/ })).toBeVisible();
-	await expect(page.getByRole('link', { name: /discovery\.simmerman\.tech/ })).toHaveCount(0);
+	// opening another row closes the first (single-open accordion)
+	await rows.filter({ hasText: 'Giddey' }).first().click();
+	await expect(discovery).toHaveAttribute('aria-expanded', 'false');
+	await expect(page.locator('.ix-item.open')).toHaveCount(1);
 });
 
 test('about section has posey gallery and resume-style work entries', async ({ page }) => {
@@ -62,9 +65,9 @@ test('about section has posey gallery and resume-style work entries', async ({ p
 	await expect(work).toContainText('XGen AI');
 	await expect(work).not.toContainText('CBB Composite');
 
-	// posey gallery photos
-	const gallery = page.locator('figure');
-	expect(await gallery.count()).toBeGreaterThanOrEqual(6);
+	// posey gallery photos (scoped — review cards are figures too, and load flakily)
+	const gallery = page.locator('.stage figure');
+	expect(await gallery.count()).toBe(5);
 });
 
 test('skills section lists all four groups below work', async ({ page }) => {
@@ -176,13 +179,15 @@ test('work section desktop keeps the role rail', async ({ page }) => {
 	await expect(page.locator('#work .dot-solo')).toBeVisible();
 });
 
-test('hero aurora and contact email CTA render', async ({ page }) => {
+test('contact email CTA renders and resume CTA points at the resume page', async ({ page }) => {
 	await page.goto('/');
-
-	// aurora blobs exist and are purely decorative
-	expect(await page.locator('.aurora .blob').count()).toBeGreaterThanOrEqual(3);
-	await expect(page.locator('.aurora').first()).toHaveAttribute('aria-hidden', 'true');
 
 	// giant mail CTA points at the real address
 	await expect(page.locator('.mega-mail')).toHaveAttribute('href', 'mailto:david@simmerman.tech');
+
+	// contact band fills the final screen and links to /resume
+	await expect(page.locator('#contact').getByRole('link', { name: /Resume/ })).toHaveAttribute(
+		'href',
+		'/resume'
+	);
 });

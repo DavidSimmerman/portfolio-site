@@ -1,68 +1,47 @@
-# Nightshift log — 2026-07-20
+# Nightshift log — 2026-07-21
 
-**Task:** Draft David's resume. Build a `/resume` page on the portfolio site where it can be
-viewed, with a "Download PDF" button.
+**Task:** 8-item portfolio feedback batch (mobile polish + copy + resume page).
+Dev server: `npx vite dev --port 5199` (already running, exposed at https://portfolio.simmerman.cc).
+Branch: `feat/resume` (continuing; working tree has pre-existing uncommitted edits to
++page.svelte / PoseyGallery.svelte / layout.css / HobbyIcon.svelte from an earlier
+interactive session — those are LIVE-reviewed state, so building on top and committing
+per-item, entangled where unavoidable).
 
 ## Status
 
-- [x] Log skeleton written (this file)
-- [x] Recon: resume facts extracted from site content via Explore subagent (work history,
-      skills, projects, education, contact — sourced from +page.svelte, verbatim)
-- [x] Branch `feat/resume` (working tree has unrelated uncommitted edits — PoseyGallery,
-      +page.svelte, layout.css, HobbyIcon — from another session; my file set is disjoint,
-      so branched in place and commit ONLY my files. Did not touch those.)
-- [x] Build `/resume` route: white paper sheet on dark canvas, Download PDF button,
-      print CSS strips chrome so PDF = the sheet
-- [x] Generate `static/resume.pdf` via Playwright print-to-PDF script — verified 1 page,
-      Letter, tuned spacing to fit (sheet height ≤ 1056px at 816px width)
-- [x] Point nav Resume links at `/resume` (+layout.svelte only — it was clean)
-- [x] e2e: new `e2e/resume.e2e.ts` (3 tests: page renders, download event fires with
-      `David-Simmerman-Resume.pdf`, `/resume.pdf` serves `%PDF-`, nav href) — all pass.
-      `pnpm check` 0 errors. Screenshots at `/tmp/shots/resume/` (desktop, mobile, pdf-1).
-      ⚠️ PRE-EXISTING failures (NOT from tonight): `home.e2e.ts` aurora + bento tests were
-      already stale — commits 122733c/1be2a85 removed those features but never updated the
-      tests. That area has in-flight uncommitted edits from another session, so I left the
-      tests alone rather than collide. 10 passed / 2 pre-existing failures.
-- [x] `codex review --base HEAD~1` (run in a clean detached worktree so the other
-      session's dirty files stayed out of the diff) — verdict: "no clear functional
-      regressions", zero findings. Bonus: it verified the PDF's link annotations
-      (mailto / simmerman.tech / GitHub / LinkedIn) are real clickable links.
-- [x] Committed on `feat/resume` — `7aca5a3`. Not pushed (task didn't ask).
-
-## Done — what shipped
-
-- **`/resume`** — the drafted resume rendered as a white Letter-size sheet on the site's
-  dark canvas, with a `← simmerman.tech` back link and an accent **Download PDF** button.
-- **`static/resume.pdf`** — real 1-page Letter PDF, generated from that same route via
-  `scripts/build-resume-pdf.mjs` (headless Chromium print). Downloads as
-  `David-Simmerman-Resume.pdf`. Links inside the PDF are clickable.
-- **Nav fixed** — desktop + mobile "Resume" links pointed at `/resume` (they previously
-  pointed at `/resume.pdf`, which didn't exist = 404). The old `/resume.pdf` CTA inside
-  +page.svelte still works too, since the PDF now exists.
-- **Content** — drafted only from facts already published on the site: Zoovu/XGen arc
-  (4 roles, Nov 2020 → present), Wisely Optimize, top 3 projects, skills, MSU education
-  line (left the medical detail off — standard convention). Worth a morning read-through:
-  `src/routes/resume/+page.svelte` — edit there, re-run the script, commit both.
+- [x] 1. Wisely logo wall: Oklahoma (OU) tile last, bottom tile same width as others (inline, me)
+- [x] 2. Mobile: Skills title ↔ "AI & LLMs" spacing (agent: skills)
+- [x] 3. Reviews: fit content w/o jumpy cycling + 5-star filter (agent: page)
+- [x] 4. Fish section: media beside text like others (mobile order) + banner image shorter on mobile so more width shows (agent: page)
+- [x] 5. "Off the clock"/"part of the site where I'm a person" → "About me" + calmer sub-line; de-corn Posey SpecLine (agent: page)
+- [x] 6. Posey gallery: remove summit-crew + snow; order steak/"The goodest girl", chief-morale/"Cool cat", day one, chair/"Her favorite chair", fetch/"Upside down naps" (agent: posey)
+- [x] 7. Contact section full-screen centered at page bottom; Resume CTA → /resume (agent: page)
+- [x] 8. Resume page: mobile shows exact fixed-width sheet scaled like a PDF page (no reflow), tap/pinch zoom path, sticky header consistent with home (agent: resume)
+- [ ] e2e updates (gallery count, contact link, resume) + full test run (me)
+- [ ] codex review + commits + final screenshots (me)
 
 ## Decisions
 
-- **PDF strategy:** pre-generated static `resume.pdf` via headless Chromium print of the
-  `/resume` route (`scripts/build-resume-pdf.mjs`). No runtime PDF lib. Button is
-  `<a href="/resume.pdf" download>`. Re-run the script after content edits.
-- **Resume content:** drafted solely from facts already published on the site (About/Work/
-  Skills/Projects sections). Education listed as "Michigan State University — Computer
-  Science coursework" (no medical detail — standard resume convention).
-- **Dirty tree:** unrelated uncommitted changes exist on `feat/nightshift-flashy`. Left
-  untouched; my changes avoid those files (incl. leaving the `/resume.pdf` CTA inside
-  +page.svelte as-is — it stays valid since the PDF now exists).
+- Item 1: "Oklahoma's at the bottom" = OU Sooners tile moves last; bottom-row tile is
+  centered at the same width as grid tiles (not full-width).
+- Item 4 "the image vertically shrunken" = the about-band hike banner (user's screenshot
+  shows it): reduce mobile height + starting zoom so more horizontal field is visible.
+- Item 5 sub-line: pick something plain/factual, flag as revisitable in wake-up notes.
+- Item 8: keep the HTML sheet (PDF is generated from it) but render it at fixed 816px
+  paper width scaled to fit on mobile = pixel-identical to the PDF; tap opens /resume.pdf
+  (native pinch-zoom viewer). No pdf.js dependency.
+- Previous log archived as NIGHTSHIFT-LOG-2026-07-20.md.
 
 ## How to run / verify
 
-- Dev: `pnpm dev` in `~/dev/portfolio-site`
-- e2e: `pnpm test` (builds + previews on :4173 automatically)
-- Regenerate PDF: `pnpm build && pnpm preview` then `node scripts/build-resume-pdf.mjs`
+- Dev: port 5199 already running (`/tmp/portfolio-dev.log`). DO NOT restart or rebind.
+- Tests: `npx playwright test` (builds + previews on 4173). Work-section tests must stay green.
+- Screenshots: `node scripts/shoot-work.mjs .claude/screenshots/<dir>` for work section;
+  agents drop ad-hoc shots under `.claude/screenshots/night2/`.
+- Pre-existing failing e2e (aurora, bento) fail without my changes too — not in scope.
 
-## Resume pointer (if resuming confused)
+## Resume pointer
 
-Read this file + `src/routes/resume/+page.svelte`. Task = resume page + PDF download.
-Continue from first unchecked box above.
+If context is lost: re-read this file + `git log --oneline -8`. Items checked above are
+committed; continue with the first unchecked item. Agent briefs are re-derivable from the
+Status list; each agent owns only the file(s) named there.
