@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { MediaQuery } from 'svelte/reactivity';
+
 	const roles = [
 		{
 			title: 'Integrations Developer',
@@ -69,30 +71,22 @@
 	$effect(() => {
 		if (wrapEl) onScroll();
 	});
-	const active = $derived(Math.min(roles.length - 1, Math.floor(progress * roles.length)));
+	// mobile gets a 5th scrub step: the brands strip (desktop shows it as a footer)
+	const mobile = new MediaQuery('(max-width: 767px)');
+	const steps = $derived(roles.length + (mobile.current ? 1 : 0));
+	const active = $derived(Math.min(steps - 1, Math.floor(progress * steps)));
 
 	function jumpTo(i: number) {
 		if (!wrapEl) return;
 		const total = wrapEl.offsetHeight - window.innerHeight;
 		window.scrollTo({
-			top: wrapEl.offsetTop + (i / roles.length) * total + 10,
+			top: wrapEl.offsetTop + (i / steps) * total + 10,
 			behavior: 'smooth'
 		});
 	}
 </script>
 
 <svelte:window onscroll={onScroll} />
-
-{#snippet brandStrip()}
-	<div class="text-[11px] font-medium tracking-[0.12em] uppercase text-[color:var(--text-4)]">
-		In production for
-	</div>
-	<div class="mt-3 flex flex-wrap items-baseline gap-x-6 gap-y-1.5 md:gap-x-8 md:gap-y-2">
-		{#each brands as b}
-			<span class="{b.cls} text-[13px] text-[color:var(--text-3)] md:text-[15px]">{b.name}</span>
-		{/each}
-	</div>
-{/snippet}
 
 <!-- pin wrap: the panel sticks for ~3 screen-heights while scroll scrubs the roles -->
 <div bind:this={wrapEl} class="wrap">
@@ -121,12 +115,12 @@
 					</p>
 					<!-- mobile: the rail collapses to tappable dots + the same progress line -->
 					<div class="dots mt-3 md:hidden">
-						{#each roles as r, i}
+						{#each [...roles.map((r) => r.title), 'In production for'] as t, i}
 							<button
 								class="dot-btn"
 								class:active={i === active}
 								class:passed={i < active}
-								aria-label="{r.title} ({i + 1} of {roles.length})"
+								aria-label="{t} ({i + 1} of {steps})"
 								aria-current={i === active}
 								onclick={() => jumpTo(i)}
 							>
@@ -164,7 +158,7 @@
 										{r.title}
 									</h4>
 									<span class="text-[12px] whitespace-nowrap text-[color:var(--text-4)]">
-										{i + 1} / {roles.length}
+										{i + 1} / {steps}
 									</span>
 								</div>
 								<p class="mt-2 text-[15px] text-[color:var(--text-3)]">{r.blurb}</p>
@@ -179,20 +173,43 @@
 								</div>
 							</div>
 						{/each}
+						<!-- mobile: brands are the 5th step of the scrub — a full-card brand wall -->
+						<div class="slide-card brands-card md:hidden" class:active={active === roles.length}>
+							<div class="flex items-baseline justify-between gap-4">
+								<h4 class="text-[clamp(1.2rem,2.4vw,1.8rem)] font-semibold tracking-[-0.02em]">
+									In production for
+								</h4>
+								<span class="text-[12px] whitespace-nowrap text-[color:var(--text-4)]">
+									{steps} / {steps}
+								</span>
+							</div>
+							<p class="mt-2 text-[15px] text-[color:var(--text-3)]">
+								Enterprise AI, live on some of the world's biggest storefronts.
+							</p>
+							<div class="brand-wall">
+								{#each brands as b, j}
+									<span class="brand-big {b.cls}" style="--d: {j * 70}ms">{b.name}</span>
+								{/each}
+							</div>
+						</div>
 					</div>
-					<!-- desktop: brands inside the card; mobile renders them after the pin instead -->
+					<!-- desktop: brands inside the card; mobile scrubs to them as the 5th step -->
 					<div class="mt-6 hidden border-t pt-5 md:block" style="border-color: var(--line-soft)">
-						{@render brandStrip()}
+						<div
+							class="text-[11px] font-medium tracking-[0.12em] uppercase text-[color:var(--text-4)]"
+						>
+							In production for
+						</div>
+						<div class="mt-3 flex flex-wrap items-baseline gap-x-8 gap-y-2">
+							{#each brands as b}
+								<span class="{b.cls} text-[15px] text-[color:var(--text-3)]">{b.name}</span>
+							{/each}
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
-
-<!-- mobile: the brands strip lives outside the pin, so the pinned card stays well under a screen tall -->
-<div class="brands-flow md:hidden">
-	{@render brandStrip()}
 </div>
 
 <style>
@@ -342,6 +359,32 @@
 		transform: none;
 		pointer-events: auto;
 	}
+	/* the brand wall — the 5th mobile step has little content, so the wordmarks
+	   go big and spread through the card instead of leaving dead space */
+	.brand-wall {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-evenly;
+		align-items: flex-start;
+		margin-top: 0.75rem;
+		padding-bottom: 0.5rem;
+	}
+	.brand-big {
+		font-size: clamp(1.35rem, 6.5vw, 2rem);
+		color: var(--text-2);
+		opacity: 0;
+		transform: translateY(14px);
+		transition:
+			opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+			transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	.slide-card.active .brand-big {
+		opacity: 1;
+		transform: none;
+		transition-delay: var(--d, 0ms);
+	}
+
 	.slide-card .stat {
 		/* anchored to the card bottom — same spot on every slide, the slack sits
 		   between points and stat instead of stretching below the card */
@@ -377,7 +420,8 @@
 		max-width: 15rem;
 	}
 	@media (min-width: 768px) {
-		.dots {
+		.dots,
+		.brands-card {
 			/* component display:flex would beat the md:hidden utility */
 			display: none;
 		}
@@ -396,10 +440,10 @@
 		cursor: pointer;
 	}
 	.dots-line {
-		/* ponytail: 4 dots → first/last centers at 12.5% / 87.5%; recompute if count changes */
+		/* ponytail: 5 dots → first/last centers at 10% / 90%; recompute if count changes */
 		position: absolute;
-		left: 12.5%;
-		right: 12.5%;
+		left: 10%;
+		right: 10%;
 		top: 50%;
 		height: 1.5px;
 		margin-top: -0.75px;
@@ -439,6 +483,11 @@
 		.stat-v {
 			font-size: 26px;
 		}
+		.wrap {
+			/* 5 steps instead of 4 — scrub distance is height - 100vh, so
+			   225vh keeps the same ~25vh per step */
+			height: 225vh;
+		}
 	}
 	/* short md+ viewports (landscape phones): same internal-scroll safety net */
 	@media (min-width: 768px) and (max-height: 620px) {
@@ -450,15 +499,6 @@
 			animation: none;
 			padding: 1.25rem 1.5rem;
 		}
-	}
-
-	/* mobile continuation strip — echoes the docked card it came out of */
-	.brands-flow {
-		margin-right: 1rem;
-		padding: 1.1rem 1.3rem;
-		background: var(--bg);
-		border-radius: 0 16px 16px 0;
-		box-shadow: inset 4px 0 0 var(--accent);
 	}
 
 	.stat {
@@ -482,7 +522,8 @@
 			animation: none;
 		}
 		.slide-card,
-		.point {
+		.point,
+		.brand-big {
 			transition: none;
 		}
 		.draw {

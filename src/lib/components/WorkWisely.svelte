@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { MediaQuery } from 'svelte/reactivity';
+
 	const sections = [
 		{
 			title: 'Roster construction',
@@ -69,30 +71,22 @@
 	$effect(() => {
 		if (wrapEl) onScroll();
 	});
-	const active = $derived(Math.min(sections.length - 1, Math.floor(progress * sections.length)));
+	// mobile gets a 5th scrub step: the programs strip (desktop shows it as a footer)
+	const mobile = new MediaQuery('(max-width: 767px)');
+	const steps = $derived(sections.length + (mobile.current ? 1 : 0));
+	const active = $derived(Math.min(steps - 1, Math.floor(progress * steps)));
 
 	function jumpTo(i: number) {
 		if (!wrapEl) return;
 		const total = wrapEl.offsetHeight - window.innerHeight;
 		window.scrollTo({
-			top: wrapEl.offsetTop + (i / sections.length) * total + 10,
+			top: wrapEl.offsetTop + (i / steps) * total + 10,
 			behavior: 'smooth'
 		});
 	}
 </script>
 
 <svelte:window onscroll={onScroll} />
-
-{#snippet programStrip()}
-	<div class="text-[11px] font-medium tracking-[0.12em] uppercase text-[color:var(--text-4)]">
-		Some of the programs on it
-	</div>
-	<div class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2.5 md:mt-4 md:gap-x-7 md:gap-y-3">
-		{#each programs as p}
-			<img src={p.src} alt={p.alt} class="logo h-8 w-auto md:h-9" loading="lazy" />
-		{/each}
-	</div>
-{/snippet}
 
 <!-- pin wrap: panel sticks while scroll scrubs through what got built -->
 <div bind:this={wrapEl} class="wrap">
@@ -120,7 +114,8 @@
 						Basketball intelligence for Division 1 programs. Part-time alongside Zoovu — year-round,
 						deep in the sport.
 					</p>
-					<div class="mt-4 flex items-baseline gap-3">
+					<!-- ponytail: hidden on mobile purely for pinned-card height — dates live in the slides -->
+					<div class="mt-4 hidden items-baseline gap-3 md:flex">
 						<span class="dot-solo"></span>
 						<span class="text-[14px] font-medium">Basketball Engineer · part-time</span>
 						<span class="ml-auto text-[12px] whitespace-nowrap text-[color:var(--text-4)]">
@@ -129,12 +124,12 @@
 					</div>
 					<!-- mobile: the rail collapses to tappable dots + the same progress line -->
 					<div class="dots mt-3 md:hidden">
-						{#each sections as s, i}
+						{#each [...sections.map((s) => s.title), 'Programs on it'] as t, i}
 							<button
 								class="dot-btn"
 								class:active={i === active}
 								class:passed={i < active}
-								aria-label="{s.title} ({i + 1} of {sections.length})"
+								aria-label="{t} ({i + 1} of {steps})"
 								aria-current={i === active}
 								onclick={() => jumpTo(i)}
 							>
@@ -182,7 +177,7 @@
 										{s.title}
 									</h4>
 									<span class="text-[12px] whitespace-nowrap text-[color:var(--text-4)]">
-										{i + 1} / {sections.length}
+										{i + 1} / {steps}
 									</span>
 								</div>
 								<p class="mt-2 text-[15px] text-[color:var(--text-3)]">{s.blurb}</p>
@@ -197,20 +192,49 @@
 								</div>
 							</div>
 						{/each}
+						<!-- mobile: programs are the 5th step of the scrub — a full-card logo wall -->
+						<div class="slide-card brands-card md:hidden" class:active={active === sections.length}>
+							<div class="flex items-baseline justify-between gap-4">
+								<h4 class="text-[clamp(1.2rem,2.4vw,1.8rem)] font-semibold tracking-[-0.02em]">
+									Some of the programs on it
+								</h4>
+								<span class="text-[12px] whitespace-nowrap text-[color:var(--text-4)]">
+									{steps} / {steps}
+								</span>
+							</div>
+							<p class="mt-2 text-[15px] text-[color:var(--text-3)]">
+								Division 1 rosters, built through the platform.
+							</p>
+							<div class="brand-wall">
+								{#each programs as p, j}
+									<img
+										src={p.src}
+										alt={p.alt}
+										class="logo logo-big"
+										style="--d: {j * 70}ms"
+										loading="lazy"
+									/>
+								{/each}
+							</div>
+						</div>
 					</div>
-					<!-- desktop: programs inside the card; mobile renders them after the pin instead -->
+					<!-- desktop: programs inside the card; mobile scrubs to them as the 5th step -->
 					<div class="mt-6 hidden border-t pt-5 md:block" style="border-color: var(--line-soft)">
-						{@render programStrip()}
+						<div
+							class="text-[11px] font-medium tracking-[0.12em] uppercase text-[color:var(--text-4)]"
+						>
+							Some of the programs on it
+						</div>
+						<div class="mt-4 flex flex-wrap items-center gap-x-7 gap-y-3">
+							{#each programs as p}
+								<img src={p.src} alt={p.alt} class="logo h-9 w-auto" loading="lazy" />
+							{/each}
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
-
-<!-- mobile: the programs strip lives outside the pin, so the pinned card stays well under a screen tall -->
-<div class="brands-flow md:hidden">
-	{@render programStrip()}
 </div>
 
 <style>
@@ -360,6 +384,33 @@
 		transform: none;
 		pointer-events: auto;
 	}
+	/* the logo wall — the 5th mobile step has little content, so the program
+	   logos go big and spread through the card instead of leaving dead space */
+	.brand-wall {
+		flex: 1;
+		display: flex;
+		flex-wrap: wrap;
+		align-content: space-evenly;
+		align-items: center;
+		gap: 1.5rem 2.2rem;
+		margin-top: 0.75rem;
+		padding-bottom: 0.5rem;
+	}
+	.logo-big {
+		height: 3.75rem;
+		width: auto;
+		opacity: 0;
+		transform: translateY(14px);
+		transition:
+			opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+			transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	.slide-card.active .logo-big {
+		opacity: 1;
+		transform: none;
+		transition-delay: var(--d, 0ms);
+	}
+
 	.slide-card .stat {
 		/* anchored to the card bottom — same spot on every slide, the slack sits
 		   between points and stat instead of stretching below the card */
@@ -395,7 +446,8 @@
 		max-width: 15rem;
 	}
 	@media (min-width: 768px) {
-		.dots {
+		.dots,
+		.brands-card {
 			/* component display:flex would beat the md:hidden utility */
 			display: none;
 		}
@@ -414,10 +466,10 @@
 		cursor: pointer;
 	}
 	.dots-line {
-		/* ponytail: 4 dots → first/last centers at 12.5% / 87.5%; recompute if count changes */
+		/* ponytail: 5 dots → first/last centers at 10% / 90%; recompute if count changes */
 		position: absolute;
-		left: 12.5%;
-		right: 12.5%;
+		left: 10%;
+		right: 10%;
 		top: 50%;
 		height: 1.5px;
 		margin-top: -0.75px;
@@ -457,6 +509,11 @@
 		.stat-v {
 			font-size: 26px;
 		}
+		.wrap {
+			/* 5 steps instead of 4 — scrub distance is height - 100vh, so
+			   225vh keeps the same ~25vh per step */
+			height: 225vh;
+		}
 	}
 	/* short md+ viewports (landscape phones): same internal-scroll safety net */
 	@media (min-width: 768px) and (max-height: 620px) {
@@ -468,15 +525,6 @@
 			animation: none;
 			padding: 1.25rem 1.5rem;
 		}
-	}
-
-	/* mobile continuation strip — echoes the docked card it came out of */
-	.brands-flow {
-		margin-left: 1rem;
-		padding: 1.1rem 1.3rem;
-		background: var(--bg);
-		border-radius: 16px 0 0 16px;
-		box-shadow: inset -4px 0 0 var(--accent);
 	}
 
 	.stat {
@@ -513,7 +561,8 @@
 			animation: none;
 		}
 		.slide-card,
-		.point {
+		.point,
+		.logo-big {
 			transition: none;
 		}
 		.draw {

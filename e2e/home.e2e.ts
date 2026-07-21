@@ -133,19 +133,21 @@ test('work section mobile: pinned scrub, dots indicator, no overlap', async ({ p
 			window.scrollTo(0, w.offsetTop + f * total + 10);
 		}, frac);
 
-	// scrubbing the pin advances the slides and the dots
+	// mobile scrub has 5 steps: 4 roles + the brands strip as the finale
+	await expect(wrap.locator('.dot-btn')).toHaveCount(5);
 	await scrollToProgress(0);
 	await expect(wrap.locator('.slide-card').first()).toHaveClass(/active/);
 	await scrollToProgress(0.9);
-	await expect(wrap.locator('.slide-card').nth(3)).toHaveClass(/active/);
-	await expect(wrap.locator('.dot-btn').nth(3)).toHaveClass(/active/);
+	await expect(wrap.locator('.slide-card').nth(4)).toHaveClass(/active/);
+	await expect(wrap.locator('.slide-card').nth(4)).toContainText('In production for');
+	await expect(wrap.locator('.dot-btn').nth(4)).toHaveClass(/active/);
 
 	// tapping a dot jumps back to that slide
 	await wrap.locator('.dot-btn').first().click();
 	await expect(wrap.locator('.slide-card').first()).toHaveClass(/active/);
 
 	// while pinned, the card sits fully on screen — clear of the nav, with breathing
-	// room at the bottom (brands render after the pin on mobile, not inside it)
+	// room at the bottom (brands are a scrub step on mobile, not a pinned footer)
 	await scrollToProgress(0.5);
 	const fit = await wrap.evaluate((w) => {
 		const p = w.querySelector('.panel')!.getBoundingClientRect();
@@ -153,7 +155,9 @@ test('work section mobile: pinned scrub, dots indicator, no overlap', async ({ p
 	});
 	expect(fit.top).toBeGreaterThan(40);
 	expect(fit.bottom).toBeLessThan(fit.vh);
-	await expect(page.locator('#work .brands-flow').first()).toBeVisible();
+
+	// the Wisely role line is trimmed on mobile
+	await expect(page.locator('#work .dot-solo')).toBeHidden();
 
 	// nothing overflows sideways
 	expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBe(
@@ -167,9 +171,9 @@ test('work section desktop keeps the role rail', async ({ page }) => {
 	await wrap.scrollIntoViewIfNeeded();
 	await expect(wrap.locator('.rail')).toBeVisible();
 	await expect(wrap.locator('.dots')).toBeHidden();
-	// brands stay inside the card on desktop — the mobile strip is gone
-	await expect(page.locator('#work .brands-flow').first()).toBeHidden();
+	// brands stay inside the card as a footer on desktop, and the role line shows
 	await expect(wrap.locator('.border-t')).toBeVisible();
+	await expect(page.locator('#work .dot-solo')).toBeVisible();
 });
 
 test('hero aurora and contact email CTA render', async ({ page }) => {

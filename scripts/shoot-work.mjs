@@ -40,27 +40,22 @@ for (const vp of viewports) {
 	});
 	console.log(vp.name, JSON.stringify(info));
 
-	// screenshot each slide of each wrap (4 slides per wrap, 2 wraps)
-	const positions = await page.evaluate(() => {
+	// screenshot each scrub step of each wrap (mobile has a 5th brands step)
+	const steps = vp.width < 768 ? 5 : 4;
+	const positions = await page.evaluate((n) => {
 		return [...document.querySelectorAll('#work .wrap')].map((w) => {
 			const r = w.getBoundingClientRect();
 			const total = r.height - window.innerHeight;
 			const top = r.top + window.scrollY;
-			return [0, 1, 2, 3].map((i) => top + (i / 4) * total + 10);
+			return Array.from({ length: n }, (_, i) => top + (i / n) * total + 10);
 		});
-	});
+	}, steps);
 	for (let wi = 0; wi < positions.length; wi++) {
-		for (let si = 0; si < 4; si++) {
+		for (let si = 0; si < steps; si++) {
 			await page.evaluate((y) => window.scrollTo(0, y), positions[wi][si]);
 			await page.waitForTimeout(700); // let transitions settle
 			await page.screenshot({ path: `${OUT}/${vp.name}-w${wi}-s${si}.png` });
 		}
-	}
-	// mobile: the brands strip that follows the pin
-	if (vp.width < 768) {
-		await page.locator('.brands-flow').first().scrollIntoViewIfNeeded();
-		await page.waitForTimeout(400);
-		await page.screenshot({ path: `${OUT}/${vp.name}-strip.png` });
 	}
 	await page.close();
 }
