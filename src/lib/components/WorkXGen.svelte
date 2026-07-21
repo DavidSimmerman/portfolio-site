@@ -83,6 +83,17 @@
 
 <svelte:window onscroll={onScroll} />
 
+{#snippet brandStrip()}
+	<div class="text-[11px] font-medium tracking-[0.12em] uppercase text-[color:var(--text-4)]">
+		In production for
+	</div>
+	<div class="mt-3 flex flex-wrap items-baseline gap-x-6 gap-y-1.5 md:gap-x-8 md:gap-y-2">
+		{#each brands as b}
+			<span class="{b.cls} text-[13px] text-[color:var(--text-3)] md:text-[15px]">{b.name}</span>
+		{/each}
+	</div>
+{/snippet}
+
 <!-- pin wrap: the panel sticks for ~3 screen-heights while scroll scrubs the roles -->
 <div bind:this={wrapEl} class="wrap">
 	<div class="pin sticky top-0 flex h-svh items-center">
@@ -162,31 +173,26 @@
 										<div class="point" style="--d: {j * 70}ms">{p}</div>
 									{/each}
 								</div>
-								<div class="stat mt-4 md:mt-6">
+								<div class="stat">
 									<span class="stat-v">{r.stat.v}</span>
 									<span class="stat-l">{r.stat.l}</span>
 								</div>
 							</div>
 						{/each}
 					</div>
-					<div class="mt-4 border-t pt-4 md:mt-6 md:pt-5" style="border-color: var(--line-soft)">
-						<div
-							class="text-[11px] font-medium tracking-[0.12em] uppercase text-[color:var(--text-4)]"
-						>
-							In production for
-						</div>
-						<div class="mt-3 flex flex-wrap items-baseline gap-x-6 gap-y-1.5 md:gap-x-8 md:gap-y-2">
-							{#each brands as b}
-								<span class="{b.cls} text-[13px] text-[color:var(--text-3)] md:text-[15px]"
-									>{b.name}</span
-								>
-							{/each}
-						</div>
+					<!-- desktop: brands inside the card; mobile renders them after the pin instead -->
+					<div class="mt-6 hidden border-t pt-5 md:block" style="border-color: var(--line-soft)">
+						{@render brandStrip()}
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+</div>
+
+<!-- mobile: the brands strip lives outside the pin, so the pinned card stays well under a screen tall -->
+<div class="brands-flow md:hidden">
+	{@render brandStrip()}
 </div>
 
 <style>
@@ -319,6 +325,8 @@
 	}
 	.slide-card {
 		grid-area: 1 / 1;
+		display: flex;
+		flex-direction: column;
 		opacity: 0;
 		visibility: hidden;
 		transform: translateY(14px);
@@ -333,6 +341,12 @@
 		visibility: visible;
 		transform: none;
 		pointer-events: auto;
+	}
+	.slide-card .stat {
+		/* anchored to the card bottom — same spot on every slide, the slack sits
+		   between points and stat instead of stretching below the card */
+		margin-top: auto;
+		padding-top: 1.25rem;
 	}
 	.point {
 		display: flex;
@@ -402,14 +416,19 @@
 
 	@media (max-width: 767px) {
 		/* fit the pinned panel inside a phone viewport: rail → dots, tighter panel,
-		   pin content clears the sticky nav */
+		   pin content clears the sticky nav. The pin always allows internal scroll —
+		   invisible when the card fits, and larger accessibility text sizes can never
+		   clip content. view() entrance is off (the pin becomes the scroll root). */
 		.rail {
 			display: none;
 		}
 		.pin {
 			padding-top: 3rem;
+			align-items: safe center;
+			overflow: hidden auto;
 		}
 		.panel {
+			animation: none;
 			margin-right: 1rem;
 			padding: 1.2rem 1.3rem;
 		}
@@ -421,22 +440,25 @@
 			font-size: 26px;
 		}
 	}
-	/* short viewports (small/landscape phones): the panel can be taller than the
-	   screen — let the pin scroll internally so nothing is unreachable. view()
-	   entrance is off here: the pin becomes the scroll root and hijacks its timeline. */
-	@media (max-width: 767px) and (max-height: 750px), (max-height: 620px) {
+	/* short md+ viewports (landscape phones): same internal-scroll safety net */
+	@media (min-width: 768px) and (max-height: 620px) {
 		.pin {
 			align-items: safe center;
 			overflow: hidden auto;
 		}
 		.panel {
 			animation: none;
-		}
-	}
-	@media (max-height: 620px) {
-		.panel {
 			padding: 1.25rem 1.5rem;
 		}
+	}
+
+	/* mobile continuation strip — echoes the docked card it came out of */
+	.brands-flow {
+		margin-right: 1rem;
+		padding: 1.1rem 1.3rem;
+		background: var(--bg);
+		border-radius: 0 16px 16px 0;
+		box-shadow: inset 4px 0 0 var(--accent);
 	}
 
 	.stat {

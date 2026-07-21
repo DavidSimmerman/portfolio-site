@@ -144,13 +144,18 @@ test('work section mobile: pinned scrub, dots indicator, no overlap', async ({ p
 	await wrap.locator('.dot-btn').first().click();
 	await expect(wrap.locator('.slide-card').first()).toHaveClass(/active/);
 
-	// the slide stack never overlaps the brands footer, and nothing overflows sideways
-	const overlap = await wrap.evaluate((w) => {
-		const slide = w.querySelector('.slide')!.getBoundingClientRect();
-		const footer = w.querySelector('.border-t')!.getBoundingClientRect();
-		return slide.bottom > footer.top + 1;
+	// while pinned, the card sits fully on screen — clear of the nav, with breathing
+	// room at the bottom (brands render after the pin on mobile, not inside it)
+	await scrollToProgress(0.5);
+	const fit = await wrap.evaluate((w) => {
+		const p = w.querySelector('.panel')!.getBoundingClientRect();
+		return { top: p.top, bottom: p.bottom, vh: window.innerHeight };
 	});
-	expect(overlap).toBe(false);
+	expect(fit.top).toBeGreaterThan(40);
+	expect(fit.bottom).toBeLessThan(fit.vh);
+	await expect(page.locator('#work .brands-flow').first()).toBeVisible();
+
+	// nothing overflows sideways
 	expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBe(
 		0
 	);
@@ -162,6 +167,9 @@ test('work section desktop keeps the role rail', async ({ page }) => {
 	await wrap.scrollIntoViewIfNeeded();
 	await expect(wrap.locator('.rail')).toBeVisible();
 	await expect(wrap.locator('.dots')).toBeHidden();
+	// brands stay inside the card on desktop — the mobile strip is gone
+	await expect(page.locator('#work .brands-flow').first()).toBeHidden();
+	await expect(wrap.locator('.border-t')).toBeVisible();
 });
 
 test('hero aurora and contact email CTA render', async ({ page }) => {
