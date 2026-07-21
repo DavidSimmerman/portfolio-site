@@ -52,8 +52,8 @@
 		{ src: '/logos/houston.svg', alt: 'Houston Cougars' },
 		{ src: '/logos/olemiss.svg', alt: 'Ole Miss Rebels' },
 		{ src: '/logos/baylor.svg', alt: 'Baylor Bears' },
-		{ src: '/logos/oklahoma.svg', alt: 'Oklahoma Sooners' },
-		{ src: '/logos/okstate.svg', alt: 'Oklahoma State Cowboys' }
+		{ src: '/logos/okstate.svg', alt: 'Oklahoma State Cowboys' },
+		{ src: '/logos/oklahoma.svg', alt: 'Oklahoma Sooners' }
 	];
 
 	let wrapEl: HTMLElement | undefined = $state();
@@ -409,8 +409,10 @@
 			transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 	.logo-tile:last-child {
-		/* 5 tiles → the wide OSU wordmark gets the full-width bottom row */
+		/* 5th tile sits alone on the bottom row — centered, same width as the others */
 		grid-column: 1 / -1;
+		justify-self: center;
+		width: calc(50% - 5px);
 	}
 	.logo-tile img {
 		height: 2.6rem;
