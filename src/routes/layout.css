@@ -57,15 +57,6 @@ html {
 		transform: translateY(0);
 	}
 }
-@keyframes parallax-zoom {
-	from {
-		transform: scale(1.16);
-	}
-	to {
-		transform: scale(1);
-	}
-}
-
 /* hero entrance lines — stagger with --d */
 .rise {
 	animation: line-in 1s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -80,17 +71,15 @@ html {
 	animation-delay: var(--vd, 0s);
 }
 
-/* full-bleed photo zoom */
+/* full-bleed photo parallax — transform driven by a scroll listener in +page.svelte
+   (works in every browser, unlike CSS scroll-driven animation-timeline) */
 .parallax {
-	animation: parallax-zoom 1s linear both;
-	animation-timeline: view();
-	animation-range: entry 0% exit 100%;
+	will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
 	.rise,
-	.reveal,
-	.parallax {
+	.reveal {
 		animation: none;
 	}
 	html {
