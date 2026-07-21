@@ -17,8 +17,8 @@ per-item, entangled where unavoidable).
 - [x] 6. Posey gallery: remove summit-crew + snow; order steak/"The goodest girl", chief-morale/"Cool cat", day one, chair/"Her favorite chair", fetch/"Upside down naps" (agent: posey)
 - [x] 7. Contact section full-screen centered at page bottom; Resume CTA → /resume (agent: page)
 - [x] 8. Resume page: mobile shows exact fixed-width sheet scaled like a PDF page (no reflow), tap/pinch zoom path, sticky header consistent with home (agent: resume)
-- [ ] e2e updates (gallery count, contact link, resume) + full test run (me)
-- [ ] codex review + commits + final screenshots (me)
+- [x] e2e updates — gallery scoped to .stage, stale bento/aurora tests realigned to the accordion design, resume mobile assertions; FULL SUITE 13/13 GREEN
+- [x] codex review (1 P2 on resume scaling — fixed with measured clientWidth/offsetWidth) + 6 commits (7bcebd2..87fd3af) + screenshots in .claude/screenshots/night2/
 
 ## Decisions
 
@@ -45,3 +45,12 @@ per-item, entangled where unavoidable).
 If context is lost: re-read this file + `git log --oneline -8`. Items checked above are
 committed; continue with the first unchecked item. Agent briefs are re-derivable from the
 Status list; each agent owns only the file(s) named there.
+
+## Final status (morning read)
+
+All 8 items done, committed on feat/resume, suite 13/13 green, lint clean, dev server
+restarted on 5199 (tunnel live). Revisitable copy decisions:
+- About-band sub-line: "Hobbies, sports, and one golden retriever."
+- Posey SpecLine: label "Posey", detail "the golden retriever".
+Screenshots: .claude/screenshots/night2/ (wisely-wall-ou, skills-mobile, posey,
+about-banner-mobile, fish-mobile, contact-*-bottom, reviews-*, resume-mobile*).
