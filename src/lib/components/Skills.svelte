@@ -70,7 +70,11 @@
 	const rowI = (gi: number, si: number) => Math.floor(gi / 2) * 5 + 1 + si;
 </script>
 
-<div bind:this={gridEl} class="grid gap-x-16 gap-y-12 md:grid-cols-2" class:anim-ready={armed}>
+<div
+	bind:this={gridEl}
+	class="mt-12 grid gap-x-16 gap-y-12 md:mt-0 md:grid-cols-2"
+	class:anim-ready={armed}
+>
 	{#each groups as g, gi}
 		<div>
 			<h3
