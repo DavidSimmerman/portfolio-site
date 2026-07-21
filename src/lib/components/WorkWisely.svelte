@@ -207,13 +207,11 @@
 							</p>
 							<div class="brand-wall">
 								{#each programs as p, j}
-									<img
-										src={p.src}
-										alt={p.alt}
-										class="logo logo-big"
-										style="--d: {j * 70}ms"
-										loading="lazy"
-									/>
+									<div class="logo-tile" style="--d: {j * 70}ms">
+										<!-- name is shown right below, so the img is decorative -->
+										<img src={p.src} alt="" class="logo" loading="lazy" />
+										<span class="logo-name">{p.alt}</span>
+									</div>
 								{/each}
 							</div>
 						</div>
@@ -386,26 +384,46 @@
 	}
 	/* the logo wall — the 5th mobile step has little content, so the program
 	   logos go big and spread through the card instead of leaving dead space */
+	/* the logo wall — uniform tiles (echoing the point cards) so different logo
+	   aspect ratios read at the same visual weight, filling the card's height */
 	.brand-wall {
 		flex: 1;
-		display: flex;
-		flex-wrap: wrap;
-		align-content: space-evenly;
-		align-items: center;
-		gap: 1.5rem 2.2rem;
-		margin-top: 0.75rem;
-		padding-bottom: 0.5rem;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 10px;
+		margin-top: 1rem;
 	}
-	.logo-big {
-		height: 3.75rem;
-		width: auto;
+	.logo-tile {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.6rem;
+		padding: 0.9rem 0.6rem;
+		border: 1px solid var(--line);
+		border-radius: 12px;
 		opacity: 0;
 		transform: translateY(14px);
 		transition:
 			opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
 			transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 	}
-	.slide-card.active .logo-big {
+	.logo-tile:last-child {
+		/* 5 tiles → the wide OSU wordmark gets the full-width bottom row */
+		grid-column: 1 / -1;
+	}
+	.logo-tile img {
+		height: 2.6rem;
+		width: 100%;
+		object-fit: contain;
+	}
+	.logo-name {
+		font-size: 11.5px;
+		line-height: 1.2;
+		text-align: center;
+		color: var(--text-4);
+	}
+	.slide-card.active .logo-tile {
 		opacity: 1;
 		transform: none;
 		transition-delay: var(--d, 0ms);
@@ -562,7 +580,7 @@
 		}
 		.slide-card,
 		.point,
-		.logo-big {
+		.logo-tile {
 			transition: none;
 		}
 		.draw {
