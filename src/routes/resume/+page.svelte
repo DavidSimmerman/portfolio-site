@@ -102,6 +102,20 @@
 			items: 'Node.js · Python · Postgres (Drizzle) · predictive analytics'
 		}
 	];
+
+	// The sheet keeps a fixed paper layout (816px = 8.5in @ 96dpi) and is scaled down
+	// as one unit on narrow viewports — like viewing a PDF page, never reflowed.
+	// transform: scale() rather than CSS zoom: zoom re-lays-out text with scaled font
+	// metrics, which shifts line breaks in WebKit (verified — the contacts line spills
+	// out of the sheet on iOS-width screens), while a transform scales the finished
+	// 816px rendering pixel-faithfully in every engine. Transforms don't affect
+	// layout, so the wrapper below reserves the scaled height from the measured one.
+	// Measured, not computed from innerWidth: clientWidth excludes scrollbars and the
+	// sheet's own offsetWidth tracks its 51rem layout width at any root font size.
+	let scalerWidth = $state(0);
+	let sheetWidth = $state(0);
+	let sheetHeight = $state(0);
+	const scale = $derived(scalerWidth && sheetWidth ? Math.min(1, scalerWidth / sheetWidth) : 1);
 </script>
 
 <svelte:head>
@@ -115,69 +129,87 @@
 		<a href="/resume.pdf" download="David-Simmerman-Resume.pdf" class="dl">Download PDF</a>
 	</div>
 
-	<article class="sheet" aria-label="Resume">
-		<header class="head">
-			<h1>David Simmerman</h1>
-			<p class="role">Software Engineer</p>
-			<p class="contacts">
-				{#each contact as c, i}
-					{#if i > 0}<span aria-hidden="true"> · </span>{/if}<a href={c.href}>{c.label}</a>
-				{/each}
-			</p>
-		</header>
-
-		<p class="summary">
-			Software engineer who makes complicated things feel simple — six years shipping enterprise AI
-			for the world’s biggest brands, integrations developer to director in five years.
-		</p>
-
-		<section>
-			<h2>Experience</h2>
-			{#each jobs as job}
-				<div class="job">
-					<p class="company">{job.company} <span class="blurb">— {job.blurb}</span></p>
-					{#each job.roles as role}
-						<div class="entry">
-							<p class="entry-head">
-								<span class="title">{role.title}</span>
-								<span class="dates">{role.dates}</span>
-							</p>
-							<ul>
-								{#each role.bullets as b}
-									<li>{b}</li>
-								{/each}
-							</ul>
-						</div>
+	<div
+		class="scaler"
+		bind:clientWidth={scalerWidth}
+		style:height={scale < 1 && sheetHeight ? `${sheetHeight * scale}px` : undefined}
+	>
+		<article
+			class="sheet"
+			aria-label="Resume"
+			bind:offsetWidth={sheetWidth}
+			bind:offsetHeight={sheetHeight}
+			style:transform={scale < 1 ? `scale(${scale})` : undefined}
+		>
+			<header class="head">
+				<h1>David Simmerman</h1>
+				<p class="role">Software Engineer</p>
+				<p class="contacts">
+					{#each contact as c, i}
+						{#if i > 0}<span aria-hidden="true"> · </span>{/if}<a href={c.href}>{c.label}</a>
 					{/each}
-				</div>
-			{/each}
-		</section>
-
-		<section>
-			<h2>Projects</h2>
-			{#each projects as p}
-				<p class="proj">
-					<span class="title">{p.name}</span>{#if p.link}
-						<span class="dates"> · {p.link}</span>{/if} — {p.desc}
 				</p>
-			{/each}
-		</section>
+			</header>
 
-		<section>
-			<h2>Skills</h2>
-			{#each skills as s}
-				<p class="proj"><span class="title">{s.group}</span> — {s.items}</p>
-			{/each}
-		</section>
-
-		<section>
-			<h2>Education</h2>
-			<p class="proj">
-				<span class="title">Michigan State University</span> — Computer Science coursework, followed by
-				continued online CS study.
+			<p class="summary">
+				Software engineer who makes complicated things feel simple — six years shipping enterprise
+				AI for the world’s biggest brands, integrations developer to director in five years.
 			</p>
-		</section>
-	</article>
+
+			<section>
+				<h2>Experience</h2>
+				{#each jobs as job}
+					<div class="job">
+						<p class="company">{job.company} <span class="blurb">— {job.blurb}</span></p>
+						{#each job.roles as role}
+							<div class="entry">
+								<p class="entry-head">
+									<span class="title">{role.title}</span>
+									<span class="dates">{role.dates}</span>
+								</p>
+								<ul>
+									{#each role.bullets as b}
+										<li>{b}</li>
+									{/each}
+								</ul>
+							</div>
+						{/each}
+					</div>
+				{/each}
+			</section>
+
+			<section>
+				<h2>Projects</h2>
+				{#each projects as p}
+					<p class="proj">
+						<span class="title">{p.name}</span>{#if p.link}
+							<span class="dates"> · {p.link}</span>{/if} — {p.desc}
+					</p>
+				{/each}
+			</section>
+
+			<section>
+				<h2>Skills</h2>
+				{#each skills as s}
+					<p class="proj"><span class="title">{s.group}</span> — {s.items}</p>
+				{/each}
+			</section>
+
+			<section>
+				<h2>Education</h2>
+				<p class="proj">
+					<span class="title">Michigan State University</span> — Computer Science coursework, followed
+					by continued online CS study.
+				</p>
+			</section>
+
+			{#if scale < 1}
+				<!-- when the sheet is scaled down, tapping it opens the real PDF — the native
+			     viewer brings pinch zoom. Never rendered at print/desktop widths. -->
+				<a class="zoom-link" href="/resume.pdf" aria-label="Open resume PDF"></a>
+			{/if}
+		</article>
+	</div>
 </div>
 
 <style>
@@ -221,7 +253,11 @@
 	/* ——— the paper ——— */
 	.sheet {
 		box-sizing: border-box;
-		max-width: 51rem; /* 8.5in @ 96dpi */
+		/* fixed paper width — narrow viewports scale the whole sheet as one unit (see
+		   <script>) instead of reflowing the text like a responsive page would */
+		width: 51rem; /* 8.5in @ 96dpi = 816px */
+		position: relative;
+		transform-origin: top left;
 		margin: 0 auto;
 		background: #fff;
 		color: #1c1c1e;
@@ -310,6 +346,11 @@
 	.proj + .proj {
 		margin-top: 5px;
 	}
+	.zoom-link {
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+	}
 
 	/* ——— print = the PDF ——— */
 	@page {
@@ -329,10 +370,17 @@
 			background: #fff;
 		}
 		.sheet {
-			max-width: none;
+			width: auto;
+			transform: none !important; /* beats the inline scale if printing from a phone */
 			border-radius: 0;
 			box-shadow: none;
 			margin: 0;
+		}
+		.scaler {
+			height: auto !important;
+		}
+		.zoom-link {
+			display: none !important; /* never bake a link annotation into the PDF */
 		}
 	}
 </style>
