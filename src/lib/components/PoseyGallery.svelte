@@ -1,14 +1,40 @@
 <script lang="ts">
+	// caller can size the deck (defaults to the original full size)
+	let { stageWidth = 'min(21rem, 84vw)' }: { stageWidth?: string } = $props();
+
 	const photos = [
-		{ src: '/images/posey-sunglasses.webp', caption: 'Chief morale officer.', w: 900, h: 1200 },
-		{ src: '/images/posey-puppy.webp', caption: 'Day one.', w: 900, h: 1200 },
-		{ src: '/images/posey-mountain.webp', caption: 'Summit crew, Appalachians.', w: 900, h: 1200 },
-		{ src: '/images/posey-snow.webp', caption: 'First snow. Unbothered.', w: 900, h: 1200 },
-		{ src: '/images/posey-recliner.webp', caption: "That's her chair now.", w: 900, h: 1200 },
-		{ src: '/images/posey-couch.webp', caption: 'Fetch training going great.', w: 900, h: 1200 },
 		{
 			src: '/images/posey-sit.webp',
-			caption: 'Waiting for the OK to eat the floor steak.',
+			caption: 'The goodest girl',
+			alt: 'Posey sitting patiently, waiting for the OK to eat a steak on the floor',
+			w: 900,
+			h: 1200
+		},
+		{
+			src: '/images/posey-sunglasses.webp',
+			caption: 'Cool cat',
+			alt: 'Posey wearing sunglasses',
+			w: 900,
+			h: 1200
+		},
+		{
+			src: '/images/posey-puppy.webp',
+			caption: 'Day one.',
+			alt: 'Posey as a puppy on her first day home',
+			w: 900,
+			h: 1200
+		},
+		{
+			src: '/images/posey-recliner.webp',
+			caption: 'Her favorite chair',
+			alt: 'Posey lounging in her favorite recliner chair',
+			w: 900,
+			h: 1200
+		},
+		{
+			src: '/images/posey-couch.webp',
+			caption: 'Upside down naps',
+			alt: 'Posey napping upside down on the couch',
 			w: 900,
 			h: 1200
 		}
@@ -35,6 +61,7 @@
 <div class="wrap">
 	<div
 		class="stage"
+		style="width: {stageWidth}"
 		role="button"
 		tabindex="0"
 		aria-label="Next photo"
@@ -48,14 +75,7 @@
 				class:tucking={leaving === i}
 				style="--jit: {jitter[i % jitter.length]}deg; z-index: {leaving === i ? 50 : 40 - d}"
 			>
-				<img
-					src={p.src}
-					alt={p.caption}
-					width={p.w}
-					height={p.h}
-					loading="lazy"
-					draggable="false"
-				/>
+				<img src={p.src} alt={p.alt} width={p.w} height={p.h} loading="lazy" draggable="false" />
 				<figcaption>{p.caption}</figcaption>
 			</figure>
 		{/each}
