@@ -5,7 +5,7 @@ test('resume page renders with a working Download PDF button', async ({ page }) 
 
 	// the sheet
 	await expect(page.getByRole('heading', { name: 'David Simmerman' })).toBeVisible();
-	for (const section of ['Experience', 'Projects', 'Skills', 'Education']) {
+	for (const section of ['Experience', 'Projects', 'Skills']) {
 		await expect(page.getByRole('heading', { name: section })).toBeVisible();
 	}
 
@@ -20,7 +20,10 @@ test('resume.pdf is served as a real PDF', async ({ request }) => {
 	const res = await request.get('/resume.pdf');
 	expect(res.status()).toBe(200);
 	expect(res.headers()['content-type']).toContain('pdf');
-	expect((await res.body()).subarray(0, 5).toString()).toBe('%PDF-');
+	const pdf = await res.body();
+	expect(pdf.subarray(0, 5).toString()).toBe('%PDF-');
+	// printed from the live page, so an edit that spills onto a second page shows up here
+	expect(pdf.toString('latin1').match(/\/Type\s*\/Page[^s]/g)).toHaveLength(1);
 });
 
 test.describe('mobile', () => {
