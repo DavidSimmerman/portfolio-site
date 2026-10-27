@@ -35,25 +35,24 @@ test('home page renders hero, sections, and working links', async ({ page }) => 
 		.toBeGreaterThan(0);
 });
 
-test('other-projects accordion lists every project and expands on click', async ({ page }) => {
+test('other-projects gallery shows every project with its links', async ({ page }) => {
 	await page.goto('/');
 
-	// every project appears as an accordion row, all collapsed initially
-	const rows = page.locator('.ix-row');
-	expect(await rows.count()).toBeGreaterThanOrEqual(5);
-	await expect(page.locator('.ix-item.open')).toHaveCount(0);
+	// one card per project, each with a GitHub link
+	const cards = page.locator('.gallery article');
+	expect(await cards.count()).toBeGreaterThanOrEqual(5);
+	for (const name of ['Bid War', 'Movie SZN', 'Discovery', 'Giddey']) {
+		const card = cards.filter({ hasText: name }).first();
+		await expect(card.getByRole('link', { name: 'GitHub' })).toHaveAttribute('href', /github\.com/);
+	}
 
-	// open Discovery → its panel (desc + GitHub link) becomes reachable
-	const discovery = rows.filter({ hasText: 'Discovery' }).first();
-	await discovery.click();
-	await expect(discovery).toHaveAttribute('aria-expanded', 'true');
-	const openPanel = page.locator('.ix-item.open .ix-panel');
-	await expect(openPanel.getByRole('link', { name: 'GitHub' })).toBeVisible();
-
-	// opening another row closes the first (single-open accordion)
-	await rows.filter({ hasText: 'Giddey' }).first().click();
-	await expect(discovery).toHaveAttribute('aria-expanded', 'false');
-	await expect(page.locator('.ix-item.open')).toHaveCount(1);
+	// the next arrow scrolls the rail; previous starts disabled
+	await page.setViewportSize({ width: 1440, height: 900 });
+	const rail = page.locator('.gallery');
+	await rail.scrollIntoViewIfNeeded();
+	await expect(page.getByRole('button', { name: 'Previous project' })).toBeDisabled();
+	await page.getByRole('button', { name: 'Next project' }).click();
+	await expect.poll(() => rail.evaluate((el) => el.scrollLeft)).toBeGreaterThan(100);
 });
 
 test('about section has posey gallery and resume-style work entries', async ({ page }) => {
@@ -70,11 +69,18 @@ test('about section has posey gallery and resume-style work entries', async ({ p
 	expect(await gallery.count()).toBe(5);
 });
 
-test('skills section lists all four groups below work', async ({ page }) => {
+test('skills section lists all six groups below work', async ({ page }) => {
 	await page.goto('/');
 
 	const skills = page.locator('#skills');
-	for (const group of ['AI & LLMs', 'Frontend', 'Backend & data', 'Beyond the code']) {
+	for (const group of [
+		'AI & vision',
+		'Frontend & mobile',
+		'Backend & data',
+		'Testing & code quality',
+		'Hardware & self-hosting',
+		'Beyond the code'
+	]) {
 		await expect(skills).toContainText(group);
 	}
 

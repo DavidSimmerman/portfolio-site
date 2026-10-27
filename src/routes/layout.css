@@ -7,6 +7,14 @@
  */
 :root {
 	--accent: #0a84ff;
+	/* Apple system cyan: accents fade blue → cyan, the way Apple sets gradient type */
+	--accent-2: #64d2ff;
+	--accent-grad: linear-gradient(90deg, var(--accent), var(--accent-2));
+	/* rendered height of the sticky nav (burger row below md). The hero subtracts it so its
+	   bottom edge — and the horizon line drawn there — lands exactly at the fold. */
+	--nav-h: 57px;
+	/* the hero's horizon line sits this far above the fold */
+	--horizon-y: clamp(36px, 5svh, 52px);
 	--cta: #2997ff;
 	--bg: #08080a;
 	--bg-elev: #131315;
@@ -18,11 +26,96 @@
 	--text-4: #636368;
 }
 
+/* Switzer, self-hosted (static/fonts) — the PDF build and the site load the same files;
+   fetched from the fontshare CDN before, which headless Chromium never reached, so the
+   printed PDF silently fell back to a system font. */
+@font-face {
+	font-family: 'Switzer';
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+	src: url('/fonts/switzer-400.woff2') format('woff2');
+}
+@font-face {
+	font-family: 'Switzer';
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+	src: url('/fonts/switzer-500.woff2') format('woff2');
+}
+@font-face {
+	font-family: 'Switzer';
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+	src: url('/fonts/switzer-600.woff2') format('woff2');
+}
+@font-face {
+	font-family: 'Switzer';
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+	src: url('/fonts/switzer-700.woff2') format('woff2');
+}
+
+@media (min-width: 768px) {
+	:root {
+		--nav-h: 47px;
+	}
+}
+
+/* gradient type for accent words, section labels and big numbers. Links stay solid --cta,
+   as Apple keeps them. Block elements need w-fit so the gradient spans the text, not the box. */
+.grad-text {
+	color: var(--accent);
+	background: var(--accent-grad);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+/* big numbers: lit from above, cyan into blue (matches the silver hero name's direction).
+   A left-to-right gradient made each short number its own odd little ramp. */
+.grad-num {
+	color: var(--accent);
+	background: linear-gradient(180deg, var(--accent-2) 0%, var(--accent) 85%);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+/* white-to-silver headlines, the way Apple sets big product type. The padding gives
+   descenders (g, y, p) room: the gradient only paints inside the box. */
+.silver {
+	background: linear-gradient(180deg, #ffffff 15%, #a1a1a6 100%);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	padding-bottom: 0.12em;
+	margin-bottom: -0.12em;
+}
+
+/* html.settled is added by +layout.svelte once SvelteKit has restored the scroll position after a
+   reload or back/forward and the fonts have loaded. Until then: no smooth scrolling (the restore
+   played as a scroll down from the top) and no scroll anchoring (it nudged the restored position
+   while the page built). */
+html.settled {
+	scroll-behavior: smooth;
+}
+html:not(.settled) {
+	overflow-anchor: none;
+}
+/* Until the web fonts load, some text wraps onto fewer lines and the page is a little shorter, so
+   a position restored near the very bottom got clamped up. Spare room below the page while it
+   settles prevents that; it's below the footer, so it's never seen. */
+html:not(.settled) body {
+	padding-bottom: 200px;
+}
+
 html {
 	background: var(--bg);
 	color: var(--text);
 	font-family: 'Switzer', ui-sans-serif, system-ui, sans-serif;
-	scroll-behavior: smooth;
 	color-scheme: dark;
 	/* decorative bleed elements (aurora blobs, docked work panels) can poke a few
 	   px past the viewport at narrow widths — clip kills the sideways overscroll
@@ -82,12 +175,53 @@ html {
 	.reveal {
 		animation: none;
 	}
-	html {
+	html.settled {
 		scroll-behavior: auto;
 	}
 }
 
 /* ---------- recurring pieces ---------- */
+/* lit card: a faint top-down sheen and a bright top edge; lifts on hover */
+.lit-card {
+	background: linear-gradient(180deg, #18181b 0%, #121214 60%);
+	border: 1px solid #ffffff0f;
+	border-radius: 16px;
+	box-shadow:
+		inset 0 1px 0 #ffffff12,
+		0 1px 2px #00000066;
+	transition:
+		transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+		border-color 0.35s,
+		box-shadow 0.35s;
+}
+.lit-card:hover {
+	transform: translateY(-3px);
+	border-color: #ffffff1f;
+	box-shadow:
+		inset 0 1px 0 #ffffff1a,
+		0 14px 30px -12px #000000cc;
+}
+@media (prefers-reduced-motion: reduce) {
+	.lit-card:hover {
+		transform: none;
+	}
+}
+/* the tinted square a gradient icon sits in */
+.icon-badge {
+	flex: none;
+	display: inline-grid;
+	place-items: center;
+	width: 2.4rem;
+	height: 2.4rem;
+	border-radius: 10px;
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--accent) 24%, transparent),
+		color-mix(in srgb, var(--accent-2) 8%, transparent)
+	);
+	box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-2) 14%, transparent);
+}
+
 .cta {
 	color: var(--cta);
 	font-weight: 500;

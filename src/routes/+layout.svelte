@@ -1,8 +1,8 @@
 <script lang="ts">
 	import './layout.css';
-	import { onMount } from 'svelte';
+	import { onDestroy } from 'svelte';
+	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { fade } from 'svelte/transition';
-	import favicon from '$lib/assets/favicon.svg';
 
 	let { children } = $props();
 
@@ -20,9 +20,15 @@
 	// highlight the section currently in the middle band of the viewport. The dot
 	// sticks to the last section entered (no flicker between sections); the hero is
 	// observed too so scrolling back to the top clears it instead of it stuck on Work.
-	onMount(() => {
+	// Re-observed after every navigation: the layout outlives the page, so leaving for
+	// /resume and coming back rebuilds the sections, and an observer set up once would
+	// keep watching the old, detached ones (the dot then never moves again).
+	let io: IntersectionObserver | undefined;
+	afterNavigate(() => {
+		io?.disconnect();
+		active = '';
 		if (typeof IntersectionObserver === 'undefined') return;
-		const io = new IntersectionObserver(
+		io = new IntersectionObserver(
 			(entries) => {
 				for (const e of entries) {
 					if (e.isIntersecting) active = e.target.id === 'hero' ? '' : e.target.id;
@@ -34,7 +40,25 @@
 			const el = document.getElementById(id);
 			if (el) io.observe(el);
 		}
-		return () => io.disconnect();
+	});
+	onDestroy(() => io?.disconnect());
+
+	// html.settled (layout.css) turns on smooth scrolling and scroll anchoring. It's off while
+	// SvelteKit restores a scroll position — on reload it's simply not on yet, and back/forward
+	// drops it — so you land exactly where you were instead of watching the page scroll there.
+	// Links to a section (/#work etc.) keep it, so they still glide.
+	beforeNavigate((nav) => {
+		if (nav.type === 'popstate' || (nav.type === 'link' && !nav.to?.url.hash))
+			document.documentElement.classList.remove('settled');
+	});
+	afterNavigate(async () => {
+		// wait for the web fonts too: until they load, some text wraps onto fewer lines and the
+		// page is shorter (see the padding note in layout.css)
+		await document.fonts.ready;
+		// two frames: past SvelteKit's scrollTo and the first paint at the restored position
+		requestAnimationFrame(() =>
+			requestAnimationFrame(() => document.documentElement.classList.add('settled'))
+		);
 	});
 
 	// no page scroll behind the mobile menu
@@ -52,7 +76,11 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+	<!-- silver DS over the blue→cyan underline: SVG for modern browsers, .ico for the ones
+	     (and crawlers) that only ask for /favicon.ico, full-bleed PNG for iOS home screens -->
+	<link rel="icon" href="/favicon.ico" sizes="32x32" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 	<title>David Simmerman — Software Engineer</title>
 	<meta
 		name="description"
@@ -159,7 +187,7 @@
 		position: absolute;
 		inset: auto 0 -1px 0;
 		height: 1px;
-		background: linear-gradient(90deg, var(--accent), #64d2ff);
+		background: var(--accent-grad);
 		transform-origin: left;
 		transform: scaleX(0);
 	}

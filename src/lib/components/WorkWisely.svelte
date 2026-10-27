@@ -1,7 +1,20 @@
 <script lang="ts">
+	import { inView } from '$lib/inView';
 	import { MediaQuery } from 'svelte/reactivity';
+	import CountUp from './CountUp.svelte';
 
 	const sections = [
+		{
+			title: 'Computer vision tracking',
+			tag: 'from game film',
+			blurb: 'NBA-style player tracking, pulled from broadcast film.',
+			points: [
+				'Turns game film into tracking data — every player’s spot on the floor, every frame',
+				'Pose models, jersey-number reads, and team colors put a name on every player',
+				'Rebuilt to run 9× faster, so a full D1 season can be tracked in the cloud'
+			],
+			stat: { v: 'x / y', l: 'every player, every frame' }
+		},
 		{
 			title: 'Roster construction',
 			tag: 'the flagship',
@@ -23,17 +36,6 @@
 				'Built for coaching staffs — answers, not dashboards'
 			],
 			stat: { v: '+/−', l: 'what to lean on, what to fix' }
-		},
-		{
-			title: 'Platform AI agent',
-			tag: 'ask the platform',
-			blurb: 'The whole platform, one question away.',
-			points: [
-				'AI agent for fast, natural-language navigation',
-				'Ask in plain English, land on the right view',
-				'Same enterprise-AI muscle as the day job'
-			],
-			stat: { v: 'AI', l: 'navigation in plain English' }
 		},
 		{
 			title: 'Frontend redesign',
@@ -71,6 +73,17 @@
 	$effect(() => {
 		if (wrapEl) onScroll();
 	});
+	// the active stat counts up again each time the card comes back on screen
+	let onScreen = $state(false);
+	$effect(() => {
+		if (!wrapEl) return;
+		return inView(
+			wrapEl,
+			() => (onScreen = true),
+			() => (onScreen = false),
+			0.01
+		);
+	});
 	// mobile gets a 5th scrub step: the programs strip (desktop shows it as a footer)
 	const mobile = new MediaQuery('(max-width: 767px)');
 	const steps = $derived(sections.length + (mobile.current ? 1 : 0));
@@ -84,6 +97,28 @@
 			behavior: 'smooth'
 		});
 	}
+
+	// the rail line runs dot center to dot center (measured, since row heights vary), and its fill
+	// lands on each dot the moment that dot turns active
+	let railEl: HTMLElement | undefined = $state();
+	let railTop = $state(0);
+	let railLen = $state(0);
+	$effect(() => {
+		const rail = railEl;
+		if (!rail) return;
+		const measure = () => {
+			const dots = rail.querySelectorAll<HTMLElement>('.rail-row .dot');
+			if (dots.length < 2) return;
+			const center = (d: HTMLElement) => d.offsetTop + d.offsetHeight / 2;
+			railTop = center(dots[0]);
+			railLen = center(dots[dots.length - 1]) - railTop;
+		};
+		measure();
+		const ro = new ResizeObserver(measure);
+		ro.observe(rail);
+		return () => ro.disconnect();
+	});
+	const railFill = $derived(Math.min(1, (progress * sections.length) / (sections.length - 1)));
 </script>
 
 <svelte:window onscroll={onScroll} />
@@ -108,7 +143,7 @@
 					<h3
 						class="text-[clamp(1.6rem,3vw,2.2rem)] leading-[1.1] font-semibold tracking-[-0.025em]"
 					>
-						Wisely Optimize
+						<span class="silver">Wisely Optimize</span>
 					</h3>
 					<p class="mt-3 text-[14px] leading-[1.5] text-[color:var(--text-3)]">
 						Basketball intelligence for Division 1 programs. Part-time alongside Zoovu — year-round,
@@ -138,7 +173,7 @@
 						{/each}
 						<div class="dots-line" style="--p: {progress}" aria-hidden="true"></div>
 					</div>
-					<div class="rail mt-8">
+					<div class="rail mt-8" bind:this={railEl}>
 						{#each sections as s, i}
 							<button
 								class="rail-row"
@@ -151,7 +186,10 @@
 								<span class="rail-dates">{s.tag}</span>
 							</button>
 						{/each}
-						<div class="rail-line" style="--p: {progress}"></div>
+						<div
+							class="rail-line"
+							style="--p: {railFill}; top: {railTop}px; height: {railLen}px"
+						></div>
 					</div>
 					<p class="mt-6">
 						<a
@@ -173,7 +211,9 @@
 						{#each sections as s, i}
 							<div class="slide-card" class:active={i === active}>
 								<div class="flex items-baseline justify-between gap-4">
-									<h4 class="text-[clamp(1.2rem,2.4vw,1.8rem)] font-semibold tracking-[-0.02em]">
+									<h4
+										class="silver text-[clamp(1.2rem,2.4vw,1.8rem)] font-semibold tracking-[-0.02em]"
+									>
 										{s.title}
 									</h4>
 									<span class="text-[12px] whitespace-nowrap text-[color:var(--text-4)]">
@@ -187,7 +227,9 @@
 									{/each}
 								</div>
 								<div class="stat">
-									<span class="stat-v">{s.stat.v}</span>
+									<span class="stat-v grad-num"
+										><CountUp value={s.stat.v} play={onScreen && i === active} /></span
+									>
 									<span class="stat-l">{s.stat.l}</span>
 								</div>
 							</div>
@@ -195,7 +237,9 @@
 						<!-- mobile: programs are the 5th step of the scrub — a full-card logo wall -->
 						<div class="slide-card brands-card md:hidden" class:active={active === sections.length}>
 							<div class="flex items-baseline justify-between gap-4">
-								<h4 class="text-[clamp(1.2rem,2.4vw,1.8rem)] font-semibold tracking-[-0.02em]">
+								<h4
+									class="silver text-[clamp(1.2rem,2.4vw,1.8rem)] font-semibold tracking-[-0.02em]"
+								>
 									Some of the programs on it
 								</h4>
 								<span class="text-[12px] whitespace-nowrap text-[color:var(--text-4)]">
@@ -244,8 +288,7 @@
 	.panel {
 		background: var(--bg);
 		margin-left: max(2rem, 9vw);
-		border-radius: 28px 0 0 28px;
-		box-shadow: inset -4px 0 0 var(--accent);
+		border-radius: 16px 0 0 16px;
 		animation: from-right 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
 		animation-timeline: view();
 		/* entry-based only — cover ranges freeze while the panel is pinned */
@@ -314,16 +357,24 @@
 		transition:
 			background 0.3s,
 			box-shadow 0.3s;
+		/* positioned so it actually sits above the line */
+		position: relative;
 		z-index: 1;
 	}
 	.rail-row.active .dot,
 	.dot-btn.active .dot {
-		background: var(--accent);
-		box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent);
+		/* solid color under the gradient so the fade to "passed" never turns see-through */
+		background: linear-gradient(135deg, var(--accent), var(--accent-2)) var(--accent);
+		/* a gap of panel color (masks the line), a crisp tinted ring, then a soft glow */
+		box-shadow:
+			0 0 0 3px var(--bg),
+			0 0 0 4.5px color-mix(in srgb, var(--accent) 55%, var(--bg)),
+			0 0 16px 5px color-mix(in srgb, var(--accent) 40%, transparent);
 	}
 	.rail-row.passed .dot,
 	.dot-btn.passed .dot {
-		background: color-mix(in srgb, var(--accent) 55%, var(--line));
+		/* mixed toward the panel, not transparent, so the line doesn't show through */
+		background: color-mix(in srgb, var(--accent) 67%, var(--bg));
 	}
 	.rail-title {
 		grid-area: title;
@@ -342,12 +393,22 @@
 	}
 	.rail-line {
 		position: absolute;
-		left: 6px;
-		top: 14px;
-		bottom: 14px;
+		/* centered under the dots: 2px rail padding + half the 9px dot, less half the line */
+		left: 5.75px;
 		width: 1.5px;
 		background: var(--line);
 		z-index: 0;
+	}
+	/* the docked edge: a 4px bar of the accent gradient (a box-shadow can't take one) */
+	.panel::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		right: 0;
+		width: 4px;
+		background: linear-gradient(180deg, var(--accent), var(--accent-2));
+		pointer-events: none;
 	}
 	.rail-line::after {
 		content: '';
@@ -355,7 +416,7 @@
 		inset: 0;
 		transform-origin: top;
 		transform: scaleY(var(--p, 0));
-		background: var(--accent);
+		background: linear-gradient(180deg, var(--accent), var(--accent-2));
 	}
 
 	/* ---- slide ---- */
@@ -400,8 +461,12 @@
 		justify-content: center;
 		gap: 0.6rem;
 		padding: 0.9rem 0.6rem;
-		border: 1px solid var(--line);
-		border-radius: 12px;
+		background: linear-gradient(180deg, #18181b 0%, #121214 60%);
+		border: 1px solid #ffffff0f;
+		box-shadow:
+			inset 0 1px 0 #ffffff12,
+			0 1px 2px #00000066;
+		border-radius: 8px;
 		opacity: 0;
 		transform: translateY(14px);
 		transition:
@@ -442,8 +507,12 @@
 		align-items: center;
 		min-height: 62px;
 		padding: 10px 14px;
-		border: 1px solid var(--line);
-		border-radius: 12px;
+		background: linear-gradient(180deg, #18181b 0%, #121214 60%);
+		border: 1px solid #ffffff0f;
+		box-shadow:
+			inset 0 1px 0 #ffffff12,
+			0 1px 2px #00000066;
+		border-radius: 8px;
 		font-size: 14px;
 		line-height: 1.45;
 		color: var(--text-2);
@@ -501,7 +570,7 @@
 		inset: 0;
 		transform-origin: left;
 		transform: scaleX(var(--p, 0));
-		background: var(--accent);
+		background: var(--accent-grad);
 	}
 
 	@media (max-width: 767px) {
@@ -553,13 +622,16 @@
 		gap: 10px;
 	}
 	.stat-v {
-		font-size: 30px;
-		font-weight: 700;
-		letter-spacing: -0.02em;
-		color: var(--accent);
+		font-size: 38px;
+		line-height: 1;
+		font-weight: 600;
+		letter-spacing: -0.03em;
+		/* room for descenders: the gradient only paints inside the box */
+		padding-bottom: 0.12em;
+		margin-bottom: -0.12em;
 	}
 	.stat-l {
-		font-size: 13px;
+		font-size: 14px;
 		color: var(--text-3);
 	}
 

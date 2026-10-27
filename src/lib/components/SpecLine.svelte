@@ -4,10 +4,13 @@
 
 <div class="reveal flex items-baseline gap-4">
 	<span
-		class="text-[clamp(1.15rem,1.8vw,1.45rem)] font-semibold tracking-[-0.02em] whitespace-nowrap"
-		style="color: var(--accent)">{label}</span
+		class="grad-text text-[clamp(1.15rem,1.8vw,1.45rem)] font-semibold tracking-[-0.02em] whitespace-nowrap"
+		>{label}</span
 	>
-	<span class="h-px flex-1 self-center" style="background: var(--line)"></span>
+	<span
+		class="h-px flex-1 self-center"
+		style="background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 40%, transparent), var(--line) 30%)"
+	></span>
 	{#if detail}
 		<span class="text-[14px] font-medium text-[color:var(--text-2)]">{detail}</span>
 	{/if}

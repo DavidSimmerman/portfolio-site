@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { inView } from '$lib/inView';
 	import { MediaQuery } from 'svelte/reactivity';
+	import CountUp from './CountUp.svelte';
 
 	const roles = [
 		{
@@ -44,7 +46,7 @@
 				'Carrying the platform and its enterprise clients through the merge',
 				'Recommendations and search for some of the world’s biggest brands'
 			],
-			stat: { v: '2026', l: 'acquisition' }
+			stat: { v: '2026', l: 'acquisition', from: 2020 }
 		}
 	];
 
@@ -71,6 +73,17 @@
 	$effect(() => {
 		if (wrapEl) onScroll();
 	});
+	// the active stat counts up again each time the card comes back on screen
+	let onScreen = $state(false);
+	$effect(() => {
+		if (!wrapEl) return;
+		return inView(
+			wrapEl,
+			() => (onScreen = true),
+			() => (onScreen = false),
+			0.01
+		);
+	});
 	// mobile gets a 5th scrub step: the brands strip (desktop shows it as a footer)
 	const mobile = new MediaQuery('(max-width: 767px)');
 	const steps = $derived(roles.length + (mobile.current ? 1 : 0));
@@ -84,6 +97,28 @@
 			behavior: 'smooth'
 		});
 	}
+
+	// the rail line runs dot center to dot center (measured, since row heights vary), and its fill
+	// lands on each dot the moment that dot turns active
+	let railEl: HTMLElement | undefined = $state();
+	let railTop = $state(0);
+	let railLen = $state(0);
+	$effect(() => {
+		const rail = railEl;
+		if (!rail) return;
+		const measure = () => {
+			const dots = rail.querySelectorAll<HTMLElement>('.rail-row .dot');
+			if (dots.length < 2) return;
+			const center = (d: HTMLElement) => d.offsetTop + d.offsetHeight / 2;
+			railTop = center(dots[0]);
+			railLen = center(dots[dots.length - 1]) - railTop;
+		};
+		measure();
+		const ro = new ResizeObserver(measure);
+		ro.observe(rail);
+		return () => ro.disconnect();
+	});
+	const railFill = $derived(Math.min(1, (progress * roles.length) / (roles.length - 1)));
 </script>
 
 <svelte:window onscroll={onScroll} />
@@ -108,7 +143,8 @@
 					<h3
 						class="text-[clamp(1.6rem,3vw,2.2rem)] leading-[1.1] font-semibold tracking-[-0.025em]"
 					>
-						XGen AI <span style="color: var(--accent)">→</span> Zoovu
+						<span class="silver">XGen AI</span> <span class="grad-text">→</span>
+						<span class="silver">Zoovu</span>
 					</h3>
 					<p class="mt-3 text-[14px] leading-[1.5] text-[color:var(--text-3)]">
 						Composable AI for e-commerce. Acquired by Zoovu in May 2026.
@@ -129,7 +165,7 @@
 						{/each}
 						<div class="dots-line" style="--p: {progress}" aria-hidden="true"></div>
 					</div>
-					<div class="rail mt-8">
+					<div class="rail mt-8" bind:this={railEl}>
 						{#each roles as r, i}
 							<button
 								class="rail-row"
@@ -142,7 +178,10 @@
 								<span class="rail-dates">{r.dates}</span>
 							</button>
 						{/each}
-						<div class="rail-line" style="--p: {progress}"></div>
+						<div
+							class="rail-line"
+							style="--p: {railFill}; top: {railTop}px; height: {railLen}px"
+						></div>
 					</div>
 				</div>
 
@@ -154,7 +193,9 @@
 						{#each roles as r, i}
 							<div class="slide-card" class:active={i === active}>
 								<div class="flex items-baseline justify-between gap-4">
-									<h4 class="text-[clamp(1.2rem,2.4vw,1.8rem)] font-semibold tracking-[-0.02em]">
+									<h4
+										class="silver text-[clamp(1.2rem,2.4vw,1.8rem)] font-semibold tracking-[-0.02em]"
+									>
 										{r.title}
 									</h4>
 									<span class="text-[12px] whitespace-nowrap text-[color:var(--text-4)]">
@@ -168,7 +209,13 @@
 									{/each}
 								</div>
 								<div class="stat">
-									<span class="stat-v">{r.stat.v}</span>
+									<span class="stat-v grad-num"
+										><CountUp
+											value={r.stat.v}
+											from={r.stat.from}
+											play={onScreen && i === active}
+										/></span
+									>
 									<span class="stat-l">{r.stat.l}</span>
 								</div>
 							</div>
@@ -176,7 +223,9 @@
 						<!-- mobile: brands are the 5th step of the scrub — a full-card brand wall -->
 						<div class="slide-card brands-card md:hidden" class:active={active === roles.length}>
 							<div class="flex items-baseline justify-between gap-4">
-								<h4 class="text-[clamp(1.2rem,2.4vw,1.8rem)] font-semibold tracking-[-0.02em]">
+								<h4
+									class="silver text-[clamp(1.2rem,2.4vw,1.8rem)] font-semibold tracking-[-0.02em]"
+								>
 									In production for
 								</h4>
 								<span class="text-[12px] whitespace-nowrap text-[color:var(--text-4)]">
@@ -221,8 +270,7 @@
 	.panel {
 		background: var(--bg);
 		margin-right: max(2rem, 9vw);
-		border-radius: 0 28px 28px 0;
-		box-shadow: inset 4px 0 0 var(--accent);
+		border-radius: 0 16px 16px 0;
 		animation: from-left 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
 		animation-timeline: view();
 		/* entry-based only — cover ranges freeze while the panel is pinned */
@@ -291,16 +339,24 @@
 		transition:
 			background 0.3s,
 			box-shadow 0.3s;
+		/* positioned so it actually sits above the line */
+		position: relative;
 		z-index: 1;
 	}
 	.rail-row.active .dot,
 	.dot-btn.active .dot {
-		background: var(--accent);
-		box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent);
+		/* solid color under the gradient so the fade to "passed" never turns see-through */
+		background: linear-gradient(135deg, var(--accent), var(--accent-2)) var(--accent);
+		/* a gap of panel color (masks the line), a crisp tinted ring, then a soft glow */
+		box-shadow:
+			0 0 0 3px var(--bg),
+			0 0 0 4.5px color-mix(in srgb, var(--accent) 55%, var(--bg)),
+			0 0 16px 5px color-mix(in srgb, var(--accent) 40%, transparent);
 	}
 	.rail-row.passed .dot,
 	.dot-btn.passed .dot {
-		background: color-mix(in srgb, var(--accent) 55%, var(--line));
+		/* mixed toward the panel, not transparent, so the line doesn't show through */
+		background: color-mix(in srgb, var(--accent) 67%, var(--bg));
 	}
 	.rail-title {
 		grid-area: title;
@@ -319,12 +375,22 @@
 	}
 	.rail-line {
 		position: absolute;
-		left: 6px;
-		top: 14px;
-		bottom: 14px;
+		/* centered under the dots: 2px rail padding + half the 9px dot, less half the line */
+		left: 5.75px;
 		width: 1.5px;
 		background: var(--line);
 		z-index: 0;
+	}
+	/* the docked edge: a 4px bar of the accent gradient (a box-shadow can't take one) */
+	.panel::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		width: 4px;
+		background: linear-gradient(180deg, var(--accent), var(--accent-2));
+		pointer-events: none;
 	}
 	.rail-line::after {
 		content: '';
@@ -332,7 +398,7 @@
 		inset: 0;
 		transform-origin: top;
 		transform: scaleY(var(--p, 0));
-		background: var(--accent);
+		background: linear-gradient(180deg, var(--accent), var(--accent-2));
 	}
 
 	/* ---- slide ---- */
@@ -396,8 +462,12 @@
 		align-items: center;
 		min-height: 62px;
 		padding: 10px 14px;
-		border: 1px solid var(--line);
-		border-radius: 12px;
+		background: linear-gradient(180deg, #18181b 0%, #121214 60%);
+		border: 1px solid #ffffff0f;
+		box-shadow:
+			inset 0 1px 0 #ffffff12,
+			0 1px 2px #00000066;
+		border-radius: 8px;
 		font-size: 14px;
 		line-height: 1.45;
 		color: var(--text-2);
@@ -455,7 +525,7 @@
 		inset: 0;
 		transform-origin: left;
 		transform: scaleX(var(--p, 0));
-		background: var(--accent);
+		background: var(--accent-grad);
 	}
 
 	@media (max-width: 767px) {
@@ -507,13 +577,16 @@
 		gap: 10px;
 	}
 	.stat-v {
-		font-size: 30px;
-		font-weight: 700;
-		letter-spacing: -0.02em;
-		color: var(--accent);
+		font-size: 38px;
+		line-height: 1;
+		font-weight: 600;
+		letter-spacing: -0.03em;
+		/* room for descenders: the gradient only paints inside the box */
+		padding-bottom: 0.12em;
+		margin-bottom: -0.12em;
 	}
 	.stat-l {
-		font-size: 13px;
+		font-size: 14px;
 		color: var(--text-3);
 	}
 
