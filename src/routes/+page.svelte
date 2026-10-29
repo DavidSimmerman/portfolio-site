@@ -158,27 +158,39 @@
 	//   3. the last milestone is centered, the row holds; the line draws to its right edge
 	// Then the pin releases. A milestone lights up (number counts up) when the line reaches it.
 	// Reduced motion: still slides, final numbers, no fades.
+	// Kept cheap for phones (Low Power Mode caps them at 30fps): every size and position is
+	// measured once, on resize, never during scroll; the row, the lit line and the card fades are
+	// written straight to the elements as transforms and opacity, which skip layout entirely.
 	let storyWrap: HTMLElement | undefined = $state();
 	let storyEl: HTMLElement | undefined = $state();
+	let storyFillEl: HTMLElement | undefined = $state();
 	let storyArmed = $state(false);
-	let storyX = $state(0);
-	let storyFill = $state(0); // px of the line that's lit
 	let msLit = $state(milestones.map(() => false));
 	let msShown = $state(milestones.map((m) => m.n));
 	$effect(() => {
 		const wrap = storyWrap;
 		const track = storyEl;
-		if (!wrap || !track) return;
+		const fill = storyFillEl;
+		if (!wrap || !track || !fill) return;
 		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		if (!reduce) {
 			storyArmed = true;
 			msShown = milestones.map((m) => m.from);
 		}
-		const cards = track.getElementsByClassName('ms') as HTMLCollectionOf<HTMLElement>;
+		const cards = [...track.getElementsByClassName('ms')] as HTMLElement[];
 		const litAt: number[] = milestones.map(() => -1);
 		let entered = false;
-		let travel = 0;
 		let raf = 0;
+		// measured in measure(), read by update()
+		let travel = 0; // how far the row slides
+		let len = 1; // the whole line, first card's left edge to the last card's right
+		let wrapTop = 0; // page y of the section
+		let wrapH = 0;
+		let stage = 0; // visible width
+		let step = 1; // card + gap
+		let firstW = 0;
+		let cardMid: number[] = []; // each card's center, row coordinates
+		let cardLeft: number[] = []; // each card's left edge, measured from the first card's
 		const count = (now: number) => {
 			let done = true;
 			msShown = milestones.map((m, i) => {
@@ -193,24 +205,32 @@
 			raf = done ? 0 : requestAnimationFrame(count);
 		};
 		const measure = () => {
-			travel = Math.max(0, track.scrollWidth - (track.parentElement?.clientWidth ?? 0));
+			// offsetLeft is unaffected by the transforms update() writes, so these stay true
+			const first = cards[0];
+			const last = cards[cards.length - 1];
+			stage = track.parentElement?.clientWidth ?? 0;
+			travel = Math.max(0, track.scrollWidth - stage);
+			firstW = first.offsetWidth;
+			len = last.offsetLeft + last.offsetWidth - first.offsetLeft;
+			step = cards.length > 1 ? cards[1].offsetLeft - first.offsetLeft : 1;
+			cardMid = cards.map((c) => c.offsetLeft + c.offsetWidth / 2);
+			cardLeft = cards.map((c) => c.offsetLeft - first.offsetLeft);
+			fill.style.width = `${len}px`;
 			// + one card: half to draw into the first milestone, half to draw out of the last
-			wrap.style.height = `calc(100svh + ${travel + (cards[0]?.offsetWidth ?? 0)}px)`;
+			wrap.style.height = `calc(100svh + ${travel + firstW}px)`;
+			wrapTop = wrap.getBoundingClientRect().top + window.scrollY;
+			wrapH = wrap.offsetHeight;
 			update();
 		};
 		const update = () => {
-			const r = wrap.getBoundingClientRect();
-			const first = cards[0];
-			const last = cards[cards.length - 1];
-			const w = track.parentElement!.clientWidth;
-			const len = last.offsetLeft + last.offsetWidth - first.offsetLeft; // whole line
-			const scrolled = Math.min(len, Math.max(0, -r.top)); // px scrolled while pinned
-			storyFill = scrolled;
-			storyX = Math.min(travel, Math.max(0, scrolled - first.offsetWidth / 2));
-			// where the line ends, in row coordinates
-			const head = first.offsetLeft + scrolled;
+			const top = wrapTop - window.scrollY; // the section's top on screen
+			const vh = window.innerHeight;
+			const scrolled = Math.min(len, Math.max(0, -top)); // px scrolled while pinned
+			const x = Math.min(travel, Math.max(0, scrolled - firstW / 2));
+			track.style.transform = `translate3d(${-x}px, 0, 0)`;
+			fill.style.transform = `scaleX(${scrolled / len})`;
 			// fully off screen: reset so it plays again next time
-			if (r.bottom < 0 || r.top > window.innerHeight) {
+			if (top + wrapH < 0 || top > vh) {
 				if (entered && !reduce) {
 					entered = false;
 					msLit = milestones.map(() => false);
@@ -220,27 +240,26 @@
 				return;
 			}
 			if (!entered) {
-				if (r.top > window.innerHeight * 0.7) return;
+				if (top > vh * 0.7) return;
 				entered = true;
 			}
 			if (reduce) return;
 			// scroll-tied side fade: d is how many slots a milestone sits from center (+ right,
 			// − left). It slides in from the right and fades up as it nears center, then fades out
 			// drifting left as it leaves.
-			const step = cards.length > 1 ? cards[1].offsetLeft - first.offsetLeft : 1;
-			const center = storyX + w / 2;
-			for (const c of cards) {
-				const d = (c.offsetLeft + c.offsetWidth / 2 - center) / step;
+			const center = x + stage / 2;
+			for (let i = 0; i < cards.length; i++) {
+				const d = (cardMid[i] - center) / step;
 				const t = Math.min(1, Math.max(0, (Math.abs(d) - 0.25) / 0.75));
 				const e = t * t * (3 - 2 * t); // smoothstep
-				c.style.opacity = String(1 - e);
-				c.style.transform = `translate3d(${Math.sign(d) * e * 120}px, 0, 0)`;
+				cards[i].style.opacity = String(1 - e);
+				cards[i].style.transform = `translate3d(${Math.sign(d) * e * 120}px, 0, 0)`;
 			}
 			const now = performance.now();
 			let lit = false;
 			for (let i = 0; i < cards.length; i++) {
 				// the first lights as the section arrives; the rest when the line reaches them
-				if (msLit[i] || (i > 0 && cards[i].offsetLeft > head)) continue;
+				if (msLit[i] || (i > 0 && cardLeft[i] > scrolled)) continue;
 				msLit[i] = true;
 				litAt[i] = now + (i === 0 ? 200 : 0);
 				lit = true;
@@ -256,9 +275,12 @@
 				ticking = false;
 			});
 		};
+		// the page above can change height after load (images, live stats), which moves the
+		// section without resizing it, so the whole page is watched too
 		const ro = new ResizeObserver(measure);
 		ro.observe(track);
 		ro.observe(wrap.firstElementChild as Element);
+		ro.observe(document.body);
 		measure();
 		window.addEventListener('scroll', onScroll, { passive: true });
 		return () => {
@@ -374,10 +396,9 @@
 				bind:this={storyEl}
 				class="story-track relative mt-12 flex w-max gap-x-8 sm:mt-0 sm:gap-x-16"
 				class:armed={storyArmed}
-				style="transform: translate3d({-storyX}px, 0, 0)"
 			>
 				<li class="story-line" aria-hidden="true">
-					<span class="story-fill" style="width: {storyFill}px"></span>
+					<span class="story-fill" bind:this={storyFillEl}></span>
 				</li>
 				{#each milestones as m, i}
 					<li class="ms" class:ms-first={i === 0} class:lit={msLit[i]}>
@@ -841,10 +862,13 @@
 		height: 1px;
 		background: var(--line);
 	}
+	/* width set to the whole line by JS; scroll grows it with scaleX (no layout per frame) */
 	.story-fill {
 		position: absolute;
 		left: 0;
 		top: 0;
+		transform: scaleX(0);
+		transform-origin: left;
 		height: 1.5px;
 		margin-top: -0.25px;
 		background: linear-gradient(90deg, var(--accent), var(--accent-2));
@@ -854,6 +878,10 @@
 		position: relative;
 		flex: 0 0 var(--card);
 		padding-top: 1.6rem;
+	}
+	/* each card slides and fades on every scroll frame: its own layer, so that's compositing only */
+	.armed .ms {
+		will-change: transform, opacity;
 	}
 	/* the unit, small and gray beside the number ("12 years old"), like Apple's spec numbers */
 	.ms-u {
