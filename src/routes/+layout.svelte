@@ -94,7 +94,10 @@
 		content="Software engineer. AI platforms, basketball analytics, and one animatronic fish."
 	/>
 	<meta property="og:url" content="https://simmerman.tech" />
-	<meta property="og:image" content="https://simmerman.tech/images/og.png" />
+	<!-- animated where the app plays GIFs (Discord, Slack, Telegram); the rest show frame one,
+	     which is the finished card. Regenerate with `node scripts/og.mjs` -->
+	<meta property="og:image" content="https://simmerman.tech/images/og.gif" />
+	<meta property="og:image:type" content="image/gif" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta name="twitter:card" content="summary_large_image" />
