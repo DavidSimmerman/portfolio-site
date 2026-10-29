@@ -119,6 +119,9 @@
 		return () => ro.disconnect();
 	});
 	const railFill = $derived(Math.min(1, (progress * roles.length) / (roles.length - 1)));
+	// same for the mobile dots: dot i lights at progress i / steps, and the line spans first dot to
+	// last, so it has to cover the steps − 1 gaps in that time (plain progress arrived late)
+	const dotsFill = $derived(Math.min(1, (progress * steps) / (steps - 1)));
 </script>
 
 <svelte:window onscroll={onScroll} />
@@ -163,7 +166,7 @@
 								<span class="dot"></span>
 							</button>
 						{/each}
-						<div class="dots-line" style="--p: {progress}" aria-hidden="true"></div>
+						<div class="dots-line" style="--p: {dotsFill}" aria-hidden="true"></div>
 					</div>
 					<div class="rail mt-8" bind:this={railEl}>
 						{#each roles as r, i}
