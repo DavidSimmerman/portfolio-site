@@ -24,24 +24,29 @@ const html = `<!doctype html><html><head><style>
 @font-face { font-family: Switzer; font-weight: 600; src: ${font(600)} format('woff2'); }
 html, body { margin: 0; width: ${W}px; height: ${H}px; background: #08080a; overflow: hidden; }
 .card { position: relative; width: 100%; height: 100%; isolation: isolate; }
+/* stacked and left-aligned like the hero. Inset 150px, not the hero's 64: iMessage crops ~90px off
+   each side of the card, and the D was cut off */
 h1 {
-	position: absolute; left: 0; right: 0; top: 218px; margin: 0; text-align: center;
-	font: 600 128px/1 Switzer, sans-serif; letter-spacing: -0.035em;
+	position: absolute; left: 150px; top: 132px; margin: 0;
+	font: 600 136px/0.98 Switzer, sans-serif; letter-spacing: -0.035em;
 }
 .silver {
 	background: linear-gradient(180deg, #ffffff 15%, #a1a1a6 100%);
 	-webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
 	padding-bottom: 0.12em;
 }
-.rise { display: inline-block; animation: line-in 1s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.rise {
+	display: block; animation: line-in 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+	animation-delay: calc(var(--d) * 150ms);
+}
 .horizon {
-	position: absolute; left: 4%; right: 4%; top: 420px; z-index: -1; height: 2px;
+	position: absolute; left: 4%; right: 4%; top: 470px; z-index: -1; height: 2px;
 	background: linear-gradient(90deg, transparent, #0a84ff 22%, #64d2ff 50%, #0a84ff 78%, transparent);
 	transform: scaleX(0);
 	animation: horizon-draw 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.9s forwards;
 }
 .sunrise {
-	position: absolute; left: 0; right: 0; top: 0; height: 420px; z-index: -1;
+	position: absolute; left: 0; right: 0; top: 50px; height: 420px; z-index: -1;
 	background: radial-gradient(62% 100% at 50% 100%,
 		rgba(100, 210, 255, 0.16) 0%, rgba(10, 132, 255, 0.11) 35%, transparent 72%);
 	transform-origin: 50% 100%; opacity: 0; transform: scale(0.3, 0.35);
@@ -54,7 +59,10 @@ h1 {
 @keyframes horizon-draw { to { transform: scaleX(1); } }
 @keyframes sunrise { to { opacity: 1; transform: none; } }
 </style></head><body><div class="card">
-	<h1><span class="rise"><span class="silver">David Simmerman</span></span></h1>
+	<h1>
+		<span class="rise" style="--d: 0"><span class="silver">David</span></span>
+		<span class="rise" style="--d: 1"><span class="silver">Simmerman</span></span>
+	</h1>
 	<div class="horizon"></div><div class="sunrise"></div>
 </div></body></html>`;
 
