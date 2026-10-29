@@ -328,6 +328,7 @@
 		/* fixed paper width — narrow viewports scale the whole sheet as one unit (see
 		   <script>) instead of reflowing the text like a responsive page would */
 		width: 51rem; /* 8.5in @ 96dpi = 816px */
+		min-height: 66rem; /* 11in = 1056px, so the sheet is Letter-shaped whatever the content */
 		position: relative;
 		transform-origin: top left;
 		margin: 0 auto;
@@ -520,6 +521,7 @@
 		}
 		.sheet {
 			width: auto;
+			min-height: 0; /* the page itself is the paper; a full 11in box could tip onto page 2 */
 			transform: none !important; /* beats the inline scale if printing from a phone */
 			border-radius: 0;
 			box-shadow: none;
