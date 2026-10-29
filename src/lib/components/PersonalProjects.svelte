@@ -8,6 +8,29 @@
 	import Icon from './Icon.svelte';
 	import CountUp from './CountUp.svelte';
 
+	const fishShots = [
+		{
+			src: '/images/fish-wiring-diagram.svg',
+			alt: 'Singing Fish wiring diagram — Raspberry Pi, H-bridge, and motor connections',
+			caption: 'The wiring diagram.',
+			w: 1060,
+			h: 780
+		},
+		{
+			src: '/images/fish-ui.png',
+			alt: 'Singing Fish web UI — the timeline editor with three motor tracks',
+			caption: 'The track editor.',
+			w: 1906,
+			h: 938
+		}
+	];
+	let shot = $state<(typeof fishShots)[number] | null>(null);
+	let shotDialog: HTMLDialogElement | undefined = $state();
+	function openShot(f: (typeof fishShots)[number]) {
+		shot = f;
+		shotDialog?.showModal();
+	}
+
 	const cbbFeatures = [
 		{
 			icon: 'layers',
@@ -185,7 +208,7 @@
 				</p>
 				<div class="big-stat">
 					<span class="big-num grad-num"
-						><CountUp value="150" play={seen[0]} /><span class="unit">+</span></span
+						><CountUp value="150" play={seen[0]} /><span class="plus">+</span></span
 					>
 					<span class="big-label">users perfected their brackets on it last March</span>
 				</div>
@@ -383,27 +406,18 @@
 						loading="lazy"
 					></iframe>
 				</div>
+				<!-- the thumbnails are cropped; tapping one opens the whole image -->
 				<div class="grid grid-cols-2 gap-4">
-					<figure class="thumb lit-card">
-						<img
-							src="/images/fish-wiring-diagram.svg"
-							alt="Singing Fish wiring diagram — Raspberry Pi, H-bridge, and motor connections"
-							width="1060"
-							height="780"
-							loading="lazy"
-						/>
-						<figcaption>The wiring diagram.</figcaption>
-					</figure>
-					<figure class="thumb lit-card">
-						<img
-							src="/images/fish-ui.png"
-							alt="Singing Fish web UI — the timeline editor with three motor tracks"
-							width="1906"
-							height="938"
-							loading="lazy"
-						/>
-						<figcaption>The track editor.</figcaption>
-					</figure>
+					{#each fishShots as f}
+						<button
+							class="thumb lit-card"
+							aria-label="Enlarge {f.caption.toLowerCase()}"
+							onclick={() => openShot(f)}
+						>
+							<img src={f.src} alt={f.alt} width={f.w} height={f.h} loading="lazy" />
+							<span class="cap">{f.caption}</span>
+						</button>
+					{/each}
 				</div>
 			</div>
 		</div>
@@ -412,6 +426,15 @@
 		</div>
 	</article>
 </div>
+
+<!-- enlarged fish image: tap anywhere or press Escape to close; pinch-zoom still works -->
+<dialog bind:this={shotDialog} class="shot" onclick={() => shotDialog?.close()}>
+	{#if shot}
+		<img src={shot.src} alt={shot.alt} width={shot.w} height={shot.h} />
+		<p class="shot-cap">{shot.caption}</p>
+	{/if}
+	<button class="shot-close" aria-label="Close"><Icon name="close" size={20} /></button>
+</dialog>
 
 <style>
 	/* each project wears its own colors: everything accented inside (eyebrow, numbers, icons,
@@ -483,9 +506,11 @@
 		line-height: 1.45;
 		color: var(--text-2);
 	}
+	/* a two-line label sits on the number by its last line, so it reads as a caption beside the
+	   number instead of starting level with it and hanging below */
 	.big-stat {
 		display: flex;
-		align-items: baseline;
+		align-items: last baseline;
 		gap: 0.75rem;
 		margin-top: 2rem;
 	}
@@ -505,12 +530,11 @@
 		padding-bottom: 0.12em;
 		margin-bottom: -0.12em;
 	}
-	.unit {
-		margin-left: 0.15rem;
-		font-size: 0.42em;
-		font-weight: 500;
-		letter-spacing: -0.01em;
-		-webkit-text-fill-color: var(--text-2);
+	/* "150+": a raised plus in the number's own gradient, like a superscript */
+	.plus {
+		margin-left: 0.04em;
+		font-size: 0.55em;
+		vertical-align: 0.6em;
 	}
 	.big-label {
 		max-width: 14rem;
@@ -583,8 +607,14 @@
 	}
 	.thumb {
 		position: relative;
+		display: block;
+		width: 100%;
+		padding: 0;
 		overflow: hidden;
 		aspect-ratio: 16 / 10;
+		cursor: zoom-in;
+		text-align: left;
+		color: inherit;
 	}
 	.thumb img {
 		width: 100%;
@@ -592,7 +622,7 @@
 		object-fit: cover;
 		object-position: left top;
 	}
-	.thumb figcaption {
+	.thumb .cap {
 		position: absolute;
 		inset: auto 0 0 0;
 		padding: 1.5rem 0.7rem 0.55rem;
@@ -601,9 +631,68 @@
 		background: linear-gradient(180deg, transparent, #050507e6);
 	}
 	@media (min-width: 640px) {
-		.thumb figcaption {
+		.thumb .cap {
 			padding: 2rem 0.9rem 0.7rem;
 			font-size: 14px;
+		}
+	}
+
+	/* the enlarged image: fills the screen over a dark backdrop, whole image visible */
+	.shot {
+		max-width: none;
+		max-height: none;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 1rem;
+		border: none;
+		background: transparent;
+		color: var(--text);
+		cursor: zoom-out;
+	}
+	.shot[open] {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.75rem;
+		animation: shot-in 0.25s ease-out;
+	}
+	.shot::backdrop {
+		background: #000000e6;
+		backdrop-filter: blur(6px);
+	}
+	.shot img {
+		max-width: 100%;
+		max-height: calc(100% - 4rem);
+		width: auto;
+		height: auto;
+		border-radius: 10px;
+	}
+	.shot-cap {
+		font-size: 14px;
+		font-weight: 600;
+		color: var(--text-2);
+	}
+	.shot-close {
+		position: absolute;
+		top: max(1rem, env(safe-area-inset-top));
+		right: 1rem;
+		display: grid;
+		place-items: center;
+		width: 44px;
+		height: 44px;
+		border-radius: 999px;
+		background: #ffffff14;
+	}
+	@keyframes shot-in {
+		from {
+			opacity: 0;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.shot[open] {
+			animation: none;
 		}
 	}
 
