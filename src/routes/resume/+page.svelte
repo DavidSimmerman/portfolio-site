@@ -519,6 +519,16 @@
 			padding: 0;
 			background: #fff;
 		}
+		/* ATS parsers read the PDF's text layer: with Switzer's 500–700 weights, kerning and
+		   letter-spacing they split words ("Sof tware", "david@simmerman.t ech"). Arial
+		   (Liberation Sans in the container) extracts cleanly and still fits one page. */
+		.sheet,
+		.sheet * {
+			font-family: Arial, 'Liberation Sans', Helvetica, sans-serif !important;
+			font-kerning: none;
+			font-variant-ligatures: none;
+			letter-spacing: normal !important;
+		}
 		.sheet {
 			width: auto;
 			min-height: 0; /* the page itself is the paper; a full 11in box could tip onto page 2 */
